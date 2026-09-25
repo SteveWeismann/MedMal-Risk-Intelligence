@@ -1,0 +1,1077 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="CHART Risk Intelligence — working prototype. Synthetic data.">
+<meta name="robots" content="noindex, nofollow">
+    <style>
+      :root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+      body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px;background:#fafaf9}
+      img{max-width:100%}
+      [hidden]{display:none!important}
+    </style>
+<title>CHART Risk Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --plane:#eef2f5; --surface:#ffffff; --surface-2:#f7fafb; --raise:#ffffff;
+  --ink:#0f1720; --ink-2:#4a5766; --muted:#74818e;
+  --line:#dbe3ea; --line-soft:#e9eef2;
+  --accent:#0d5b6b; --accent-ink:#ffffff; --accent-soft:#e0eef1; --accent-line:#bcd9de;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a;
+  --seq:#2a78d6; --seq-soft:#cde2fb; --seq-pale:#9ec5f4;
+  --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
+  --good-ink:#00630c; --critical-ink:#a32020; --serious-ink:#9a4a22; --warning-ink:#7a5600;
+  --shadow:0 1px 2px rgba(15,23,32,.05), 0 1px 12px rgba(15,23,32,.04);
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --plane:#090d11; --surface:#131a21; --surface-2:#0f161c; --raise:#182028;
+    --ink:#eaf0f5; --ink-2:#a3b1bd; --muted:#7f8c99;
+    --line:#212b35; --line-soft:#1a232b;
+    --accent:#35a9bb; --accent-ink:#04222a; --accent-soft:#11303a; --accent-line:#1d4954;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+    --seq:#3987e5; --seq-soft:#184f95; --seq-pale:#2a78d6;
+    --good-ink:#0ca30c; --critical-ink:#e07a7a; --serious-ink:#ec835a; --warning-ink:#fab219;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 1px 12px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --plane:#090d11; --surface:#131a21; --surface-2:#0f161c; --raise:#182028;
+  --ink:#eaf0f5; --ink-2:#a3b1bd; --muted:#7f8c99;
+  --line:#212b35; --line-soft:#1a232b;
+  --accent:#35a9bb; --accent-ink:#04222a; --accent-soft:#11303a; --accent-line:#1d4954;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+  --seq:#3987e5; --seq-soft:#184f95; --seq-pale:#2a78d6;
+  --good-ink:#0ca30c; --critical-ink:#e07a7a; --serious-ink:#ec835a; --warning-ink:#fab219;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 1px 12px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--plane); color:var(--ink);
+  font-family:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.mono{font-family:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1360px; margin:0 auto; padding-inline:16px}
+
+header.top{position:sticky; top:env(safe-area-inset-top, 0px); z-index:40;
+  background:var(--surface); border-bottom:1px solid var(--line);}
+.topbar{display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding-block:12px}
+.brand{display:flex; align-items:baseline; gap:10px; margin-right:auto}
+.brand h1{font-size:16px; font-weight:600; margin:0; letter-spacing:-.01em}
+.brand .sub{font-size:12px; color:var(--muted)}
+.ctl{display:inline-flex; align-items:center; gap:7px; height:32px; padding:0 11px;
+  background:var(--surface-2); border:1px solid var(--line); border-radius:7px;
+  color:var(--ink-2); font:inherit; font-size:12.5px; cursor:pointer;}
+.ctl:hover{border-color:var(--accent-line); color:var(--ink)}
+select.ctl{appearance:none; padding-right:26px;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:calc(100% - 14px) 14px, calc(100% - 9px) 14px;
+  background-size:5px 5px,5px 5px; background-repeat:no-repeat;}
+.asof{font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--good);flex:none}
+.badge-demo{font-size:10.5px; font-weight:600; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--warning-ink); background:color-mix(in srgb, var(--warning) 16%, transparent);
+  border:1px solid color-mix(in srgb, var(--warning) 45%, transparent);
+  padding:3px 8px; border-radius:5px;}
+nav.tabs{display:flex; gap:2px; overflow-x:auto; scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{appearance:none; background:none; border:0; border-bottom:2px solid transparent;
+  padding:9px 12px 10px; font:inherit; font-size:13px; font-weight:500;
+  color:var(--muted); cursor:pointer; white-space:nowrap;}
+nav.tabs button:hover{color:var(--ink)}
+nav.tabs button[aria-selected="true"]{color:var(--accent); border-bottom-color:var(--accent); font-weight:600}
+nav.tabs button:focus-visible,.ctl:focus-visible,.rowbtn:focus-visible,.act:focus-visible,.seg button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+nav.tabs button.empty{opacity:.42}
+nav.tabs button.empty::after{content:"";display:inline-block;width:4px;height:4px;border-radius:50%;background:currentColor;margin-left:6px;vertical-align:2px}
+
+/* release-stage bar */
+.stagebar{display:flex; align-items:center; gap:10px; padding:0 0 10px; flex-wrap:wrap}
+.sbl{font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+.sbn{font-size:11.5px; color:var(--muted)}
+.seg{display:inline-flex; background:var(--surface-2); border:1px solid var(--line); border-radius:8px; padding:2px; gap:2px}
+.seg button{appearance:none; border:0; background:none; font:inherit; font-size:12px; font-weight:500;
+  color:var(--ink-2); padding:4px 11px; border-radius:6px; cursor:pointer; white-space:nowrap}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--accent); color:var(--accent-ink); font-weight:600}
+/* stage chips on cards */
+.stg{font-size:9.5px; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
+  padding:2px 6px; border-radius:4px; border:1px solid var(--line); color:var(--muted); background:var(--surface-2); white-space:nowrap}
+.stg.mvp{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
+.stg.p1{color:var(--ink-2)}
+.stg.p1a{color:var(--serious-ink); border-color:color-mix(in srgb,var(--serious) 40%,transparent); background:color-mix(in srgb,var(--serious) 10%,transparent)}
+.stg.road{color:var(--muted)}
+.card[hidden]{display:none}
+.emptystate{background:var(--surface); border:1px dashed var(--line); border-radius:var(--r);
+  padding:26px 18px; text-align:center; color:var(--muted); font-size:12.5px; margin-top:14px}
+.emptystate b{display:block; color:var(--ink-2); font-size:13px; margin-bottom:4px}
+
+.notice{display:flex; gap:10px; align-items:flex-start; background:var(--accent-soft);
+  border:1px solid var(--accent-line); border-radius:var(--r); padding:11px 13px;
+  margin-top:16px; font-size:12.5px; color:var(--ink-2);}
+.notice b{color:var(--ink)}
+
+.kpis{display:grid; grid-template-columns:repeat(6,1fr); gap:1px; background:var(--line);
+  border:1px solid var(--line); border-radius:var(--r); overflow:hidden; margin-top:16px}
+.kpi{background:var(--surface); padding:13px 14px 12px}
+.kpi .lab{font-size:11px; color:var(--muted); letter-spacing:.02em; display:block; margin-bottom:6px}
+.kpi .val{font-size:25px; font-weight:600; letter-spacing:-.02em; line-height:1.1}
+.kpi .val small{font-size:14px; font-weight:500; color:var(--ink-2); margin-left:2px}
+.kpi .delta{font-size:11.5px; margin-top:5px; color:var(--muted)}
+.up{color:var(--critical-ink)} .down{color:var(--good-ink)} .ok{color:var(--good-ink)}
+
+main{padding-bottom:56px}
+.grid{display:grid; gap:14px; margin-top:14px}
+.g-2{grid-template-columns:1fr 1fr}
+.g-32{grid-template-columns:1.55fr 1fr}
+.g-23{grid-template-columns:1fr 1.55fr}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow)}
+.card > header{display:flex; align-items:baseline; gap:10px; padding:13px 15px 0; flex-wrap:wrap}
+.card h2{font-size:13.5px; font-weight:600; margin:0; letter-spacing:-.005em}
+.card .hint{font-size:11.5px; color:var(--muted); margin-left:auto}
+.card .body{padding:12px 15px 15px}
+.card .lead{font-size:12px; color:var(--ink-2); padding:4px 15px 0; margin:0}
+
+.chart svg{display:block; width:100%; height:auto; overflow:visible}
+.legend{display:flex; gap:14px; flex-wrap:wrap; font-size:11.5px; color:var(--ink-2); padding:0 15px 2px}
+.legend i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:-1px}
+#tip{position:fixed; z-index:90; pointer-events:none; opacity:0; transform:translate(-50%,-120%);
+  background:var(--raise); border:1px solid var(--line); border-radius:7px; box-shadow:var(--shadow);
+  padding:7px 9px; font-size:11.5px; color:var(--ink); white-space:nowrap; transition:opacity .09s;}
+#tip .tl{color:var(--muted); font-size:10.5px; display:block; margin-bottom:2px}
+
+.tscroll{overflow-x:auto}
+table{width:100%; border-collapse:collapse; font-size:12.5px}
+th{text-align:left; font-weight:500; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--muted); padding:0 10px 7px; border-bottom:1px solid var(--line); white-space:nowrap;}
+td{padding:9px 10px; border-bottom:1px solid var(--line-soft); vertical-align:top}
+tbody tr:last-child td{border-bottom:0}
+tbody tr.clickable{cursor:pointer}
+tbody tr.clickable:hover{background:var(--surface-2)}
+td.r, th.r{text-align:right}
+.rowbtn{appearance:none;background:none;border:0;padding:0;font:inherit;color:var(--accent);cursor:pointer;text-align:left}
+
+.chip{display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:500;
+  padding:2px 7px; border-radius:20px; border:1px solid var(--line); color:var(--ink-2);
+  background:var(--surface-2); white-space:nowrap;}
+.chip.sup{color:var(--critical-ink); border-color:color-mix(in srgb,var(--critical) 40%,transparent); background:color-mix(in srgb,var(--critical) 11%,transparent)}
+.chip.rec{color:var(--warning-ink); border-color:color-mix(in srgb,var(--warning) 45%,transparent); background:color-mix(in srgb,var(--warning) 14%,transparent)}
+.chip.pso{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
+.chip.soc{color:var(--serious-ink); border-color:color-mix(in srgb,var(--serious) 45%,transparent); background:color-mix(in srgb,var(--serious) 13%,transparent)}
+.chip.new{color:var(--good-ink); border-color:color-mix(in srgb,var(--good) 40%,transparent); background:color-mix(in srgb,var(--good) 11%,transparent)}
+.sev{display:inline-flex;align-items:center;gap:6px}
+.sevbar{width:34px;height:5px;border-radius:3px;background:var(--line);overflow:hidden;flex:none}
+.sevbar i{display:block;height:100%;border-radius:3px}
+
+.scrim{position:fixed; inset:0; background:rgba(8,14,20,.45); z-index:60; opacity:0; transition:opacity .18s}
+.scrim.on{opacity:1}
+aside.drawer{position:fixed; top:0; right:0; bottom:0; width:min(520px,100%); z-index:70;
+  background:var(--surface); border-left:1px solid var(--line);
+  transform:translateX(100%); transition:transform .22s ease; overflow-y:auto;
+  padding-bottom:env(safe-area-inset-bottom, 0px);}
+aside.drawer.on{transform:none}
+@media (prefers-reduced-motion: reduce){ aside.drawer,.scrim,#tip{transition:none} }
+.dhead{display:flex; align-items:flex-start; gap:12px; padding:15px 16px 13px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--surface); z-index:2}
+.dhead h3{margin:0; font-size:14.5px; font-weight:600; line-height:1.35}
+.dhead .x{appearance:none;background:none;border:0;color:var(--muted);font-size:20px;line-height:1;cursor:pointer;padding:0 2px;margin-left:auto}
+.dhead .x:hover{color:var(--ink)}
+.dsec{padding:13px 16px; border-bottom:1px solid var(--line-soft)}
+.dsec h4{margin:0 0 7px; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:500}
+.quote{background:var(--surface-2); border:1px solid var(--line); border-left:3px solid var(--seq);
+  border-radius:0 7px 7px 0; padding:10px 12px; font-size:12.5px; color:var(--ink-2); line-height:1.55;}
+.cite{display:flex; gap:8px; align-items:center; font-size:11.5px; color:var(--muted); margin-top:7px; flex-wrap:wrap}
+.kv{display:grid; grid-template-columns:130px 1fr; gap:6px 10px; font-size:12.5px}
+.kv dt{color:var(--muted)} .kv dd{margin:0; color:var(--ink)}
+.acts{display:flex; gap:8px; flex-wrap:wrap; padding:14px 16px}
+.act{flex:1 1 auto; min-width:118px; appearance:none; border:1px solid var(--line); background:var(--surface-2);
+  color:var(--ink); border-radius:8px; padding:9px 11px; font:inherit; font-size:12.5px; font-weight:500; cursor:pointer; text-align:center}
+.act:hover{border-color:var(--accent-line)}
+.act.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.dnote{font-size:11.5px; color:var(--muted); padding:0 16px 18px}
+
+/* chronology */
+.tl{list-style:none;margin:0;padding:0 0 0 2px}
+.tl li{position:relative;padding:0 0 13px 20px;border-left:1.5px solid var(--line);font-size:12.5px}
+.tl li:last-child{border-left-color:transparent;padding-bottom:0}
+.tl li::before{content:"";position:absolute;left:-5px;top:4px;width:8px;height:8px;border-radius:50%;
+  background:var(--surface);border:2px solid var(--muted)}
+.tl li.hit::before{border-color:var(--critical);background:var(--critical)}
+.tl li .t{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;display:block}
+.tl li .e{color:var(--ink-2)}
+.tl li.hit .e{color:var(--ink);font-weight:500}
+
+.note{font-size:11.5px; color:var(--muted); margin:9px 0 0}
+.bare{list-style:none; margin:0; padding:0}
+.bare li{display:flex; gap:10px; padding:9px 0; border-bottom:1px solid var(--line-soft); font-size:12.5px; align-items:flex-start}
+.bare li:last-child{border-bottom:0}
+.bare .n{font-weight:600; font-variant-numeric:tabular-nums; min-width:34px; text-align:right; color:var(--ink)}
+.stack{display:flex;flex-direction:column;gap:9px}
+.mini{display:flex;align-items:baseline;gap:8px;font-size:12.5px}
+.mini .b{font-weight:600;font-variant-numeric:tabular-nums}
+.alert{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line-soft);font-size:12.5px}
+.alert:last-child{border-bottom:0}
+.alert .ic{width:18px;height:18px;border-radius:5px;flex:none;display:grid;place-items:center;margin-top:1px}
+.pill{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.pill.g{color:var(--good-ink);background:color-mix(in srgb,var(--good) 13%,transparent)}
+.pill.r{color:var(--critical-ink);background:color-mix(in srgb,var(--critical) 12%,transparent)}
+footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:1px solid var(--line); margin-top:22px}
+@media (max-width:1100px){ .kpis{grid-template-columns:repeat(3,1fr)} .g-32,.g-2,.g-23{grid-template-columns:1fr} }
+@media (max-width:560px){ .kpis{grid-template-columns:repeat(2,1fr)} .kpi .val{font-size:22px} }
+</style>
+</head>
+<body>
+
+
+<header class="top">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand"><h1>CHART Risk Intelligence</h1><span class="sub">Claim Analysis Capability</span></div>
+      <span class="badge-demo">Prototype · illustrative data</span>
+      <select class="ctl" id="scope" aria-label="Reporting scope">
+        <option>CHART-wide · 8 members</option>
+        <option>Member Hospital A</option><option>Member Hospital B</option>
+        <option>Member Hospital C</option><option>Member Hospital D</option>
+      </select>
+      <select class="ctl" id="period" aria-label="Period">
+        <option>Rolling 24 months</option><option>Rolling 12 months</option><option>Policy year to date</option>
+      </select>
+      <span class="asof"><span class="dot"></span>Updated 25 Sep 2026, 06:00</span>
+    </div>
+    <div class="stagebar">
+      <span class="sbl">Show</span>
+      <div class="seg" role="group" aria-label="Release stage filter">
+        <button data-f="all" aria-pressed="true">Full capability</button>
+        <button data-f="p1" aria-pressed="false">Phase 1</button>
+        <button data-f="mvp" aria-pressed="false">First release</button>
+      </div>
+      <span class="sbn" id="stagecount"></span>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Views">
+      <button role="tab" aria-selected="true" data-tab="overview">Overview</button>
+      <button role="tab" aria-selected="false" data-tab="clinical">Clinical risk</button>
+      <button role="tab" aria-selected="false" data-tab="developing">Developing claims</button>
+      <button role="tab" aria-selected="false" data-tab="claims">Claims support</button>
+      <button role="tab" aria-selected="false" data-tab="mitigation">Mitigation &amp; trends</button>
+      <button role="tab" aria-selected="false" data-tab="members">Members</button>
+      <button role="tab" aria-selected="false" data-tab="reports">Reports</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="notice">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex:none;margin-top:1px" aria-hidden="true">
+      <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M8 4.6v4.2M8 11.2v.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <div><b>Prototype for discussion.</b> Every figure is synthetic and generated for design review — no CHART claim data has been processed. Each view is labelled with the SOW objective it serves so the session can check coverage against CHART's own document.</div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <!-- ================= OVERVIEW ================= -->
+  <section id="overview">
+    <div class="grid g-32">
+      <div class="card" data-stage="p1">
+        <header><h2>New since your last review</h2><span class="hint">Objective 1.4 · analysis as the claim develops</span></header>
+        <p class="lead">Matters re-analyzed overnight as new documents arrived. Five days since your last session.</p>
+        <div class="body" id="alerts"></div>
+      </div>
+      <div class="card" data-stage="mvp">
+        <header><h2>Findings awaiting disposition</h2><span class="hint">Parameter P.4</span></header>
+        <p class="lead">Open-claim findings are protected on creation and must be dispositioned.</p>
+        <div class="body">
+          <ul class="bare" id="queue-summary"></ul>
+          <p class="note">Oldest item in queue: 6 days. Target: 10 business days.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g-32">
+      <div class="card" data-stage="mvp">
+        <header><h2>Priority queue</h2><span class="hint">Select a row for the finding and its source</span></header>
+        <p class="lead">Developing matters where the analysis has surfaced a supported clinical issue.</p>
+        <div class="body tscroll"><table id="t-priority"></table></div>
+      </div>
+      <div class="card" data-stage="mvp">
+        <header><h2>Clinical risk categories</h2><span class="hint">Objective 1.2</span></header>
+        <div class="body chart" id="c-cat-mini"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CLINICAL ================= -->
+  <section id="clinical" hidden>
+    <div class="grid g-32">
+      <div class="card" data-stage="mvp">
+        <header><h2>Findings by clinical category</h2><span class="hint">Objective 1.2 · rolling 24 months</span></header>
+        <p class="lead">Ranked by volume. Diagnostic categories lead, consistent with published experience for this claim type.</p>
+        <div class="body chart" id="c-cat"></div>
+      </div>
+      <div class="card" data-stage="p1">
+        <header><h2>Standard-of-care issues</h2><span class="hint">Objective 1.3</span></header>
+        <p class="lead">Findings carrying a potential standard-of-care concern, separated by whether the concern is already asserted in the file.</p>
+        <div class="body" id="soc-panel"></div>
+      </div>
+    </div>
+
+    <div class="grid g-2">
+      <div class="card" data-stage="p1">
+        <header><h2>Contributing factors</h2><span class="hint">Share of findings</span></header>
+        <p class="lead">Operational factors appear alongside clinical acts, which is where mitigation usually lands.</p>
+        <div class="body chart" id="c-factor"></div>
+      </div>
+      <div class="card" data-stage="p1">
+        <header><h2>Responsible service</h2><span class="hint">Findings per service line</span></header>
+        <div class="body chart" id="c-service"></div>
+      </div>
+    </div>
+
+    <div class="grid g-2">
+      <div class="card" data-stage="p1">
+        <header><h2>Clinical severity of underlying injury</h2><span class="hint">NAIC severity scale · matters</span></header>
+        <div class="body chart" id="c-sev"></div>
+      </div>
+      <div class="card" data-stage="mvp">
+        <header><h2>Reviewed and not flagged</h2><span class="hint">Parameter P.5 · negative space</span></header>
+        <p class="lead">A reviewer can judge how far to trust the system only by seeing the boundary of its attention.</p>
+        <div class="body tscroll"><table id="t-neg"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DEVELOPING ================= -->
+  <section id="developing" hidden>
+    <div class="card" data-stage="mvp">
+      <header><h2>Developing matters under analysis</h2><span class="hint">Objectives 1.1 &amp; 1.4 · 47 open</span></header>
+      <p class="lead">Every finding carries an evidentiary grade. A cause is asserted only where evidence reaches the supported threshold.</p>
+      <div class="body tscroll"><table id="t-dev"></table></div>
+    </div>
+    <div class="grid g-2">
+      <div class="card" data-stage="p1a">
+        <header><h2>Information gaps</h2><span class="hint">Objective 1A.6</span></header>
+        <p class="lead">Measured against an expected-document schema for the matter's stage.</p>
+        <div class="body chart" id="c-gaps"></div>
+      </div>
+      <div class="card" data-stage="mvp">
+        <header><h2>Document intake</h2><span class="hint">Objective 1.1 · last 30 days</span></header>
+        <p class="lead">What arrived, was converted and was analyzed. Re-analysis runs overnight.</p>
+        <div class="body" id="intake"></div>
+      </div>
+    </div>
+    <div class="card" data-stage="p1" style="margin-top:14px">
+      <header><h2>Open matter age</h2><span class="hint">Months since report</span></header>
+      <div class="body chart" id="c-age"></div>
+    </div>
+  </section>
+
+  <!-- ================= CLAIMS SUPPORT ================= -->
+  <section id="claims" hidden>
+    <div class="notice stage-note" data-stage="p1a" style="margin-top:14px;background:var(--surface-2);border-color:var(--line)">
+      <div><b>Phase 1A — secondary focus.</b> These capabilities draw on the converted archive and its outcome data. They are shown here to agree the shape of the output; they are sequenced behind the risk management release.</div>
+    </div>
+    <div class="grid g-32">
+      <div class="card" data-stage="p1a">
+        <header><h2>Potentially significant claims</h2><span class="hint">Objective 1A.3</span></header>
+        <p class="lead">Matters that read as routine but carry characteristics CHART's resolved claims associate with significant development.</p>
+        <div class="body tscroll"><table id="t-sig"></table></div>
+      </div>
+      <div class="card" data-stage="p1a">
+        <header><h2>Liability factors</h2><span class="hint">Objective 1A.1</span></header>
+        <p class="lead">Frequency across open matters. Factors, not conclusions.</p>
+        <div class="body chart" id="c-liab"></div>
+      </div>
+    </div>
+    <div class="grid g-2">
+      <div class="card" data-stage="p1a">
+        <header><h2>Severity-associated factors</h2><span class="hint">Objective 1A.2</span></header>
+        <p class="lead">Factors the archive associates with higher resolution values. No value figure is generated for an open matter.</p>
+        <div class="body" id="value-panel"></div>
+      </div>
+      <div class="card" data-stage="p1a">
+        <header><h2>Posture considerations</h2><span class="hint">Objective 1A.4</span></header>
+        <p class="lead">Factors bearing on each course of action for matter CH-2389. The decision stays with the claims professional.</p>
+        <div class="body" id="posture"></div>
+      </div>
+    </div>
+    <div class="card" data-stage="p1a" style="margin-top:14px">
+      <header><h2>Comparable historical matters</h2><span class="hint">Objective 1A.5 · compared against CH-2389</span></header>
+      <p class="lead">Ranked by why they are comparable, not by surface similarity. Each dimension that matched is named.</p>
+      <div class="body tscroll"><table id="t-comp"></table></div>
+    </div>
+  </section>
+
+  <!-- ================= MITIGATION & TRENDS ================= -->
+  <section id="mitigation" hidden>
+    <div class="card" data-stage="p1">
+      <header><h2>Findings per quarter — three leading categories</h2><span class="hint">Objective 1.7 · baseline established Q4 2025</span></header>
+      <p class="lead">Trend measurement needs a baseline. The first four quarters establish one; comparison begins Q1 2026.</p>
+      <div class="legend" id="l-trend"></div>
+      <div class="body chart" id="c-trend"></div>
+    </div>
+
+    <div class="grid g-23">
+      <div class="card" data-stage="p1">
+        <header><h2>Where to focus</h2><span class="hint">Objective 1.6</span></header>
+        <p class="lead">Ranked by finding rate against CHART mean, weighted by severity.</p>
+        <div class="body" id="focus"></div>
+      </div>
+      <div class="card" data-stage="road">
+        <header><h2>Is mitigation working?</h2><span class="hint">Objective 1.7 · findings per 100 matters, before and after</span></header>
+        <p class="lead">Each pair is one Refocus initiative: the four quarters before it began, and the quarters since.</p>
+        <div class="body chart" id="c-impact"></div>
+      </div>
+    </div>
+
+    <div class="card" data-stage="p1" style="margin-top:14px">
+      <header><h2>Effect on CHART's existing review</h2><span class="hint">Objective 1.8 · against the manual baseline recorded at Stage 1</span></header>
+      <p class="lead">CHART's objective is a review that is more timely, consistent and detailed — measured against how the review ran before the platform.</p>
+      <div class="body tscroll"><table id="t-process"></table></div>
+    </div>
+  </section>
+
+  <!-- ================= MEMBERS ================= -->
+  <section id="members" hidden>
+    <div class="card" data-stage="p1">
+      <header><h2>Findings per 100 converted matters</h2><span class="hint">Objective 1.5 · CHART mean 18.4</span></header>
+      <p class="lead">Rates are normalized because raw counts track member size. Members are ordered by rate, not by name.</p>
+      <div class="body chart" id="c-members"></div>
+    </div>
+    <div class="card" data-stage="p1" style="margin-top:14px">
+      <header><h2>Member detail</h2><span class="hint">Mitigation activity is recorded against the findings that prompted it</span></header>
+      <div class="body tscroll"><table id="t-members"></table></div>
+    </div>
+  </section>
+
+  <!-- ================= REPORTS ================= -->
+  <section id="reports" hidden>
+    <div class="card" data-stage="mvp">
+      <header><h2>Standard reports and deliverables</h2><span class="hint">Objective 1.9 &amp; 1A.8</span></header>
+      <p class="lead">CHART's objectives leave the specific content, format, frequency and level of detail to be defined as the project develops. This is the proposed first set — the two marked <b>MVP</b> are built in the first release; the rest are the catalogue to prioritize from.</p>
+      <div class="body tscroll"><table id="t-reports"></table></div>
+    </div>
+    <div class="grid g-2">
+      <div class="card" data-stage="p1a">
+        <header><h2>Alerts</h2><span class="hint">Objective 1A.8 · triggers and routing</span></header>
+        <p class="lead">Who is notified, when, and by what channel. Open for CHART to set.</p>
+        <div class="body tscroll"><table id="t-alerts"></table></div>
+      </div>
+      <div class="card" data-stage="p1">
+        <header><h2>Distribution</h2><span class="hint">CHART-wide and individual hospital reporting</span></header>
+        <div class="body" id="dist"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="pg">
+    CHART Risk Intelligence — prototype build 0.2 · MAPS Technologies. Each view is labelled with the CHART SOW objective it serves. Metric definitions follow standard medical professional liability practice (frequency, severity, incurred indemnity and ALAE, report-to-close lag); clinical coding dimensions follow the CRICO CBS convention — responsible service, major allegation, clinical severity, contributing factors. All figures synthetic.
+  </footer>
+</main>
+
+<div id="tip" role="status" aria-live="polite"></div>
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" aria-label="Finding detail" hidden></aside>
+
+<script>
+/* ============ data (synthetic) ============ */
+const KPI = [
+  {lab:"Matters analyzed", val:"312", d:"47 open · 265 closed"},
+  {lab:"Findings, 24 months", val:"1,140", d:"↑ 8% vs prior period", cls:"up"},
+  {lab:"Awaiting disposition", val:"23", d:"6 over 5 days", cls:"up"},
+  {lab:"Incurred indemnity", val:"$28.6", sub:"M", d:"paid + case reserves"},
+  {lab:"Incurred ALAE", val:"$12.6", sub:"M", d:"31% of total incurred"},
+  {lab:"Report-to-close", val:"26", sub:"mo", d:"median, closed matters"}
+];
+
+const CATS = [["Diagnosis — missed or delayed",268],["Abnormal result follow-up",196],["Surgical / procedural performance",154],
+  ["Monitoring and failure to rescue",131],["Medication management",112],["Obstetrical management",88],
+  ["Transfer and handoff",79],["Consent and documentation",62]];
+const FACTORS = [["Clinical judgment",42],["Communication among providers",31],["Documentation",27],["Workload and time pressure",24],
+  ["Communication with patient or family",19],["Supervision",14],["Technical skill",11],["EHR-related",9]];
+const SERVICES = [["Emergency medicine",231],["Internal / family medicine",204],["General surgery",158],["Obstetrics and gynecology",142],
+  ["Nursing",118],["Radiology",96],["Orthopedics",84],["Cardiology",61]];
+const SEVERITY = [["Emotional only",9],["Temporary insignificant",21],["Temporary minor",38],["Temporary major",44],
+  ["Permanent minor",51],["Permanent significant",58],["Permanent major",46],["Death",45]];
+const LIABILITY = [["Deviation asserted by retained expert",34],["Documented policy not followed",29],["Absent documentation of a required step",26],
+  ["Informed consent not evidenced",17],["Conflicting accounts within the record",14],["Prior similar event at same unit",8]];
+const GAPS = [["Missing records — imaging",14],["Missing records — outside provider",11],["Incomplete nursing notes",9],
+  ["Timeline gap > 72 hours",7],["Inconsistent medication record",5]];
+const AGE = [["0–6 mo",12],["7–12 mo",11],["13–24 mo",13],["25–36 mo",7],["37+ mo",4]];
+const QUARTERS = ["Q1 25","Q2 25","Q3 25","Q4 25","Q1 26","Q2 26","Q3 26","Q4 26"];
+const TREND = [
+  {name:"Diagnosis — missed or delayed", color:"--s1", v:[28,31,30,34,33,37,36,39]},
+  {name:"Abnormal result follow-up", color:"--s2", v:[19,22,24,23,27,26,24,21]},
+  {name:"Surgical / procedural", color:"--s3", v:[17,18,16,19,18,20,19,21]}];
+
+const IMPACT = [
+  {name:"Result acknowledgement loop", member:"Member B", before:24.1, after:16.8, q:"4 quarters since"},
+  {name:"ED diagnostic pathway", member:"Member F", before:29.4, after:25.9, q:"3 quarters since"},
+  {name:"Service transfer checklist", member:"Member D", before:19.2, after:18.7, q:"2 quarters since"},
+  {name:"Abnormal result escalation", member:"CHART-wide", before:21.5, after:19.0, q:"3 quarters since"}];
+
+const MEMBERS = [
+  {m:"Member Hospital F", rate:26.1, matters:38, findings:10, open:7, refocus:"Active — dx pathway"},
+  {m:"Member Hospital B", rate:23.4, matters:47, findings:11, open:6, refocus:"Active — result loop"},
+  {m:"Member Hospital A", rate:20.8, matters:53, findings:11, open:9, refocus:"Scheduled Q4"},
+  {m:"Member Hospital D", rate:18.9, matters:41, findings:8, open:5, refocus:"Active — handoff"},
+  {m:"Member Hospital C", rate:17.2, matters:35, findings:6, open:4, refocus:"—"},
+  {m:"Member Hospital G", rate:15.6, matters:32, findings:5, open:6, refocus:"Complete"},
+  {m:"Member Hospital E", rate:13.1, matters:39, findings:5, open:5, refocus:"—"},
+  {m:"Member Hospital H", rate:11.9, matters:27, findings:3, open:5, refocus:"Complete"}];
+
+const FOCUS = [
+  {t:"Abnormal result follow-up", w:"Member F, Member B", why:"Rate 2.1× CHART mean; severity-weighted", act:"Education + result loop audit"},
+  {t:"ED diagnostic triage", w:"Member A", why:"Three supported findings in 6 months, all severity 7+", act:"Refocus visit"},
+  {t:"Service transfer handoff", w:"Member D, Member G", why:"Rising 4 quarters; low severity but high frequency", act:"Checklist rollout"},
+  {t:"Obstetric monitoring intervals", w:"CHART-wide", why:"Highest severity category; flat trend", act:"Portfolio-level review"}];
+
+const PROCESS = [
+  ["Matters reviewed per quarter","18","74","+311%"],
+  ["Days from document arrival to first finding","41","1","−98%"],
+  ["Proportion of matters with structured coding","22%","100%",""],
+  ["Findings per matter reviewed","1.4","3.7","+164%"],
+  ["Reviewer hours spent locating information","~6.0 hrs","~1.2 hrs","−80%"],
+  ["Matters reviewed by two or more reviewers","9%","100%",""]];
+
+const SIGNIFICANT = [
+  {id:"CH-2389", member:"A", why:"Severity 9 with documented onset time and a 5-hour imaging delay", band:"Upper quartile", conf:"Supported"},
+  {id:"CH-2411", member:"B", why:"Critical lab unacknowledged before discharge; pattern present in 3 resolved matters", band:"Upper quartile", conf:"Supported"},
+  {id:"CH-2398", member:"A", why:"Obstetric monitoring interval exceeded; category carries highest historical severity", band:"Upper quartile", conf:"Supported"},
+  {id:"CH-2402", member:"F", why:"Incidental finding with no follow-up over 11 months", band:"Mid", conf:"Supported"}];
+
+const VALUEFACTORS = [
+  ["Permanent significant or greater injury", "3.1×", true],
+  ["Claimant under 40 at time of injury", "2.4×", true],
+  ["Documented deviation from written policy", "1.9×", true],
+  ["Delay exceeding 4 hours in time-critical presentation", "1.8×", true],
+  ["Conflicting accounts within the record", "1.4×", false],
+  ["Informed consent not evidenced", "1.3×", false]];
+
+const POSTURE = [
+  {p:"Early resolution", f:["Severity 9 permanent injury","Documented onset time and imaging delay both in the record","Two comparable matters resolved above the upper quartile"], n:3},
+  {p:"Continued defense", f:["No deviation asserted by a retained expert to date"], n:1},
+  {p:"Additional investigation", f:["Triage staffing records for the shift not yet produced","Second reviewer has not examined the imaging log"], n:2},
+  {p:"Expert review", f:["No emergency medicine expert retained","Stroke pathway compliance not yet assessed"], n:2},
+  {p:"Heightened attention", f:["Escalation signal present","Matter age 14 months with rising ALAE"], n:2}];
+
+const COMPARABLES = [
+  {id:"CH-1842", yr:"2021", dims:["Same allegation category","Severity 8 vs 9","ED presentation","Delay to imaging > 4 hrs"], out:"Resolved — upper quartile", match:"High"},
+  {id:"CH-1663", yr:"2020", dims:["Same allegation category","Severity 9","Documented onset time","Triage acuity dispute"], out:"Resolved — upper quartile", match:"High"},
+  {id:"CH-2015", yr:"2022", dims:["Same allegation category","Severity 7","ED presentation"], out:"Defense verdict", match:"Moderate"},
+  {id:"CH-1590", yr:"2019", dims:["Same service line","Severity 8","Delay to treatment"], out:"Resolved — mid band", match:"Moderate"}];
+
+const REPORTS = [
+  ["Risk findings summary","CHART risk management","Monthly","CHART-wide + per member","MVP"],
+  ["Member hospital risk profile","Member risk manager","Quarterly","Per member","MVP"],
+  ["Claims review committee pack","Claims review committee","Per meeting","CHART-wide",""],
+  ["Emerging pattern brief","CHART leadership","Quarterly","CHART-wide",""],
+  ["Mitigation impact review","Risk management + member","Semi-annual","Per initiative",""],
+  ["Information gap worklist","Claims professionals","Weekly","Per adjuster",""],
+  ["Portfolio trend report","CHART board","Annual","CHART-wide",""]];
+
+const ALERTS_CFG = [
+  ["Supported finding on an open matter","Assigned claims professional","In system + email","On creation"],
+  ["Escalation signal raised","Claims lead + risk management","Email","On creation"],
+  ["Finding materially changed by new documents","Assigned professional","In system","Overnight"],
+  ["Disposition overdue beyond 10 business days","Claims lead","Email","Daily digest"],
+  ["Member rate crosses CHART mean","Risk management","In system","Monthly"]];
+
+const NEW_ITEMS = [
+  {t:"CH-2411 — new supported finding", d:"Critical potassium result unacknowledged before discharge. Raised after ED records arrived 22 Sep.", k:"critical", id:"CH-2411"},
+  {t:"CH-2416 — finding changed grade", d:"Moved from proposed to recorded after the transfer note was produced. Two gaps remain.", k:"warning", id:"CH-2416"},
+  {t:"CH-2402 — information gap closed", d:"Outside imaging received; nodule follow-up finding unchanged.", k:"good", id:"CH-2402"},
+  {t:"Member F — rate crossed CHART mean", d:"Abnormal result follow-up now 2.1× mean across 38 matters.", k:"serious", id:null}];
+
+const INTAKE = [["Documents received",1284],["Converted and indexed",1284],["Matters re-analyzed",39],["Findings created or changed",14]];
+
+const SOC = {
+  asserted: 71, independent: 18, total: 1140,
+  rows:[["Deviation asserted in a retained expert report",71,"Surfaced from the file"],
+        ["Documented policy in the file not followed",18,"Assessed against the member's own produced policy"],
+        ["Published clinical guidance",0,"Not in scope pending CHART and counsel decision"]]
+};
+
+const FINDINGS = [
+  {id:"CH-2411", member:"B", service:"Emergency medicine", cat:"Abnormal result follow-up", grade:"supported", sev:7, age:"4 mo", gaps:1, sig:true, soc:"policy", isNew:true,
+   title:"Critical potassium result not acknowledged before discharge",
+   text:"Laboratory value of 6.8 mmol/L resulted at 02:14. Discharge order entered 02:51. No acknowledgement of the result is recorded in the chart, and no repeat draw appears before discharge.",
+   src:"ED record — Bates 00412, page 7, lines 9–14", factors:["Communication among providers","Workload and time pressure"],
+   why:"The result and the discharge order sit 37 minutes apart with no intervening acknowledgement entry. The expected result-acknowledgement step is absent from the record rather than documented and declined.",
+   chron:[["01:47","Patient presents, blood drawn",0],["02:14","Potassium 6.8 mmol/L resulted",1],["02:31","Nursing note — patient stable",0],["02:51","Discharge order entered",1],["03:10","Patient departs",0],["09:22","Result flagged on morning review",1]]},
+  {id:"CH-2398", member:"A", service:"Obstetrics and gynecology", cat:"Monitoring and failure to rescue", grade:"supported", sev:8, age:"7 mo", gaps:0, sig:true, soc:"policy",
+   title:"Category II tracing persisted 90 minutes without documented reassessment",
+   text:"Continuous fetal monitoring shows a Category II pattern from 18:20. The next documented clinician assessment is at 19:55. Unit policy in the produced materials calls for reassessment at 30-minute intervals.",
+   src:"L&D flowsheet — Bates 01188, pages 3–4", factors:["Clinical judgment","Supervision"],
+   why:"The interval between documented assessments exceeds the interval stated in the member's own produced policy. Both the tracing and the policy are in the file.",
+   chron:[["18:20","Category II pattern begins",1],["18:35","Routine vitals recorded",0],["19:05","No assessment documented",1],["19:55","Clinician assessment documented",1],["20:12","Decision for delivery",0]]},
+  {id:"CH-2402", member:"F", service:"Internal / family medicine", cat:"Diagnosis — missed or delayed", grade:"supported", sev:6, age:"11 mo", gaps:2, sig:false, soc:"expert",
+   title:"Incidental pulmonary nodule noted on imaging, no follow-up ordered",
+   text:"CT report dated 14 March describes a 9 mm right upper lobe nodule with a recommendation for three-month interval imaging. No subsequent imaging order appears in the produced record.",
+   src:"Radiology report — Bates 00877, page 2", factors:["Communication among providers","Documentation"],
+   why:"The radiologist's recommendation is explicit in the report. No corresponding order, patient notification, or declination is recorded in the eleven months of subsequent records produced.",
+   chron:[["14 Mar","CT performed; nodule reported",1],["14 Mar","Recommendation: 3-month interval imaging",1],["02 Apr","Primary care visit — nodule not addressed",1],["19 Sep","Patient re-presents symptomatic",0]]},
+  {id:"CH-2416", member:"D", service:"General surgery", cat:"Transfer and handoff", grade:"recorded", sev:5, age:"2 mo", gaps:3, sig:false, soc:null, isNew:true,
+   title:"Anticoagulation status not carried across service transfer",
+   text:"Transfer note does not reference the patient's anticoagulation. The receiving service's first medication reconciliation omits the agent recorded on admission.",
+   src:"Transfer note — Bates 01402, page 1", factors:["Communication among providers","Documentation"],
+   why:"Recorded rather than supported: the omission is visible in the produced documents, but the file does not yet contain the receiving service's full medication administration record.",
+   chron:[["Day 1","Admission — anticoagulant recorded",0],["Day 3","Transfer to surgical service",1],["Day 3","Medication reconciliation omits agent",1]]},
+  {id:"CH-2389", member:"A", service:"Emergency medicine", cat:"Diagnosis — missed or delayed", grade:"supported", sev:9, age:"14 mo", gaps:0, sig:true, soc:"expert",
+   title:"Stroke symptoms triaged as non-urgent; imaging delayed 5 hours",
+   text:"Triage note records unilateral weakness and slurred speech with onset 45 minutes prior. Triage acuity assigned level 4. First head imaging performed 5 hours 12 minutes after arrival.",
+   src:"Triage record — Bates 00204, page 1; imaging log page 11", factors:["Clinical judgment","Workload and time pressure"],
+   why:"Documented presenting symptoms and documented onset time are both in the record, as is the imaging timestamp. The interval is measurable from the file without inference.",
+   chron:[["07:12","Arrival; onset 45 min prior",1],["07:19","Triage acuity level 4 assigned",1],["09:40","Reassessment — symptoms unchanged",0],["12:24","Head CT performed",1],["13:05","Stroke pathway activated",0]]},
+  {id:"CH-2421", member:"B", service:"Medication / pharmacy", cat:"Medication management", grade:"proposed", sev:4, age:"1 mo", gaps:2, sig:false, soc:null,
+   title:"Possible dosing discrepancy in renally-adjusted antibiotic",
+   text:"Administered dose appears inconsistent with the documented creatinine clearance on the day of admission.",
+   src:"MAR — Bates 01510, page 6", factors:["Clinical judgment"],
+   why:"Proposed only. The renal function values and the administration record are present, but the weight used for dosing is not in the produced materials, so the calculation cannot be closed.",
+   chron:[["Day 1","Creatinine clearance documented",0],["Day 1","First dose administered",1],["Day 2","Dose unchanged",1]]}
+];
+
+const NEGATIVE = [["Consent documentation",312,"Reviewed in every matter; 62 findings raised"],
+  ["Discharge instructions",298,"Reviewed; 18 findings raised"],
+  ["Interpreter use and language access",271,"Reviewed; 4 findings raised"],
+  ["Equipment and device records",104,"Reviewed where present; no findings raised"],
+  ["Restraint documentation",46,"Reviewed where present; no findings raised"]];
+
+/* ============ helpers ============ */
+const $ = s => document.querySelector(s);
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const tip = $('#tip');
+const showTip=(e,h)=>{tip.innerHTML=h;tip.style.opacity=1;moveTip(e);};
+const moveTip=e=>{tip.style.left=e.clientX+'px';tip.style.top=(e.clientY-8)+'px';};
+const hideTip=()=>{tip.style.opacity=0;};
+const SEVCOL = v => v>=8?'--critical':v>=6?'--serious':v>=4?'--warning':'--good';
+const GRADE = {supported:['sup','Supported'],recorded:['rec','Recorded'],proposed:['','Proposed']};
+const gradeChip = g => {const[c,l]=GRADE[g];return `<span class="chip ${c}">${l}</span>`;};
+const socChip = s => s ? `<span class="chip soc">Standard of care</span>` : '';
+
+/* ============ KPI ============ */
+$('#kpis').innerHTML = KPI.map(k=>`<div class="kpi"><span class="lab">${esc(k.lab)}</span>
+  <div class="val num">${esc(k.val)}${k.sub?`<small>${esc(k.sub)}</small>`:''}</div>
+  <div class="delta ${k.cls||''}">${esc(k.d)}</div></div>`).join('');
+
+/* ============ charts ============ */
+function hbar(sel, rows, opt){
+  opt=opt||{}; const labW=opt.labW||205, rowH=27, barH=11, vw=660;
+  const h=rows.length*rowH+4, max=Math.max(...rows.map(r=>r[1])), trackW=vw-labW-54;
+  const fill=opt.color||'var(--seq)', unit=opt.unit||'';
+  let s=`<svg viewBox="0 0 ${vw} ${h}" role="img" aria-label="${esc(opt.aria||'')}">`;
+  rows.forEach((r,i)=>{ const y=i*rowH+2, w=Math.max(2,(r[1]/max)*trackW);
+    s+=`<text x="0" y="${y+barH+1}" font-size="11.5" fill="${cssv('--ink-2')}">${esc(r[0])}</text>`;
+    s+=`<rect x="${labW}" y="${y}" width="${trackW}" height="${barH}" rx="4" fill="${cssv('--line-soft')}"/>`;
+    s+=`<rect class="bar" data-l="${esc(r[0])}" data-v="${r[1]}${unit}" x="${labW}" y="${y}" width="${w}" height="${barH}" rx="4" fill="${fill}"/>`;
+    s+=`<text x="${labW+trackW+8}" y="${y+barH+1}" font-size="11.5" font-weight="600" fill="${cssv('--ink')}" style="font-variant-numeric:tabular-nums">${r[1]}${unit}</text>`;});
+  s+=`</svg>`; const el=$(sel); el.innerHTML=s;
+  el.querySelectorAll('.bar').forEach(b=>{
+    b.addEventListener('mouseenter',e=>showTip(e,`<span class="tl">${esc(b.dataset.l)}</span><b>${esc(b.dataset.v)}</b>`));
+    b.addEventListener('mousemove',moveTip); b.addEventListener('mouseleave',hideTip);});
+}
+function vbar(sel, rows, opt){
+  opt=opt||{}; const vw=560, plotH=150, padL=4, padB=42, n=rows.length;
+  const max=Math.max(...rows.map(r=>r[1])), colW=(vw-padL*2)/n, bw=Math.min(46,colW-10);
+  let s=`<svg viewBox="0 0 ${vw} ${plotH+padB+18}" role="img" aria-label="${esc(opt.aria||'')}">`;
+  [0,.5,1].forEach(t=>{const y=18+plotH-t*plotH;
+    s+=`<line x1="0" x2="${vw}" y1="${y}" y2="${y}" stroke="${cssv('--line-soft')}" stroke-width="1"/>`;
+    s+=`<text x="0" y="${y-4}" font-size="10" fill="${cssv('--muted')}" style="font-variant-numeric:tabular-nums">${Math.round(t*max)}</text>`;});
+  rows.forEach((r,i)=>{const bh=Math.max(2,(r[1]/max)*plotH), x=padL+i*colW+(colW-bw)/2, y=18+plotH-bh;
+    s+=`<rect class="bar" data-l="${esc(r[0])}" data-v="${r[1]}" x="${x}" y="${y}" width="${bw}" height="${bh}" rx="4" fill="${opt.color||'var(--seq)'}"/>`;
+    s+=`<text x="${x+bw/2}" y="${y-5}" text-anchor="middle" font-size="11" font-weight="600" fill="${cssv('--ink')}" style="font-variant-numeric:tabular-nums">${r[1]}</text>`;
+    const w=String(r[0]).split(' '), l1=w.slice(0,2).join(' '), l2=w.slice(2).join(' ');
+    s+=`<text x="${x+bw/2}" y="${18+plotH+15}" text-anchor="middle" font-size="10.5" fill="${cssv('--muted')}">${esc(l1)}</text>`;
+    if(l2) s+=`<text x="${x+bw/2}" y="${18+plotH+27}" text-anchor="middle" font-size="10.5" fill="${cssv('--muted')}">${esc(l2)}</text>`;});
+  s+=`</svg>`; const el=$(sel); el.innerHTML=s;
+  el.querySelectorAll('.bar').forEach(b=>{
+    b.addEventListener('mouseenter',e=>showTip(e,`<span class="tl">${esc(b.dataset.l)}</span><b>${esc(b.dataset.v)} matters</b>`));
+    b.addEventListener('mousemove',moveTip); b.addEventListener('mouseleave',hideTip);});
+}
+function lines(sel, cats, series){
+  const vw=700, plotH=190, padL=30, padR=12, top=12;
+  const max=Math.ceil(Math.max(...series.flatMap(s=>s.v))/10)*10;
+  const stepX=(vw-padL-padR)/(cats.length-1), X=i=>padL+i*stepX, Y=v=>top+plotH-(v/max)*plotH;
+  let s=`<svg viewBox="0 0 ${vw} ${plotH+46}" role="img" aria-label="Findings per quarter by category">`;
+  for(let t=0;t<=4;t++){const y=top+plotH-(t/4)*plotH;
+    s+=`<line x1="${padL}" x2="${vw-padR}" y1="${y}" y2="${y}" stroke="${cssv('--line-soft')}" stroke-width="1"/>`;
+    s+=`<text x="0" y="${y+3.5}" font-size="10" fill="${cssv('--muted')}" style="font-variant-numeric:tabular-nums">${Math.round((t/4)*max)}</text>`;}
+  const bx=X(3.5);
+  s+=`<line x1="${bx}" x2="${bx}" y1="${top}" y2="${top+plotH}" stroke="${cssv('--line')}" stroke-width="1" stroke-dasharray="3 3"/>`;
+  s+=`<text x="${bx+6}" y="${top+10}" font-size="10" fill="${cssv('--muted')}">baseline established</text>`;
+  cats.forEach((c,i)=>{s+=`<text x="${X(i)}" y="${top+plotH+17}" text-anchor="middle" font-size="10.5" fill="${cssv('--muted')}">${esc(c)}</text>`;});
+  series.forEach(se=>{const col=cssv(se.color);
+    s+=`<path d="${se.v.map((v,i)=>`${i?'L':'M'}${X(i)} ${Y(v)}`).join(' ')}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    se.v.forEach((v,i)=>{s+=`<circle cx="${X(i)}" cy="${Y(v)}" r="${i===se.v.length-1?4.5:3.2}" fill="${col}" stroke="${cssv('--surface')}" stroke-width="2"/>`;});
+    const l=se.v.length-1;
+    s+=`<text x="${X(l)}" y="${Y(se.v[l])-10}" text-anchor="end" font-size="11" font-weight="600" fill="${col}" style="font-variant-numeric:tabular-nums">${se.v[l]}</text>`;});
+  cats.forEach((c,i)=>{s+=`<rect class="hit" data-i="${i}" x="${X(i)-stepX/2}" y="${top}" width="${stepX}" height="${plotH}" fill="transparent"/>`;});
+  s+=`</svg>`; const el=$(sel); el.innerHTML=s;
+  const svg=el.querySelector('svg');
+  const cross=document.createElementNS('http://www.w3.org/2000/svg','line');
+  cross.setAttribute('stroke',cssv('--line')); cross.setAttribute('stroke-width','1'); cross.setAttribute('opacity','0'); svg.appendChild(cross);
+  el.querySelectorAll('.hit').forEach(h=>{
+    h.addEventListener('mouseenter',e=>{const i=+h.dataset.i;
+      cross.setAttribute('x1',X(i));cross.setAttribute('x2',X(i));cross.setAttribute('y1',top);cross.setAttribute('y2',top+plotH);cross.setAttribute('opacity','1');
+      showTip(e,`<span class="tl">${esc(cats[i])}</span>`+series.map(se=>
+        `<div><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${cssv(se.color)};margin-right:6px"></i>${esc(se.name.split(' —')[0])} <b>${se.v[i]}</b></div>`).join(''));});
+    h.addEventListener('mousemove',moveTip);
+    h.addEventListener('mouseleave',()=>{cross.setAttribute('opacity','0');hideTip();});});
+  $('#l-trend').innerHTML=series.map(se=>`<span><i style="background:${cssv(se.color)}"></i>${esc(se.name)}</span>`).join('');
+}
+function lolli(sel, rows){
+  const vw=680, labW=165, rowH=30, h=rows.length*rowH+22, mean=18.4;
+  const max=Math.ceil(Math.max(...rows.map(r=>r.rate))/5)*5, trackW=vw-labW-46;
+  let s=`<svg viewBox="0 0 ${vw} ${h}" role="img" aria-label="Findings per 100 converted matters by member">`;
+  const mx=labW+(mean/max)*trackW;
+  s+=`<line x1="${mx}" x2="${mx}" y1="2" y2="${rows.length*rowH+2}" stroke="${cssv('--accent')}" stroke-width="1" stroke-dasharray="3 3"/>`;
+  s+=`<text x="${mx}" y="${rows.length*rowH+16}" text-anchor="middle" font-size="10" fill="${cssv('--accent')}">CHART mean 18.4</text>`;
+  rows.forEach((r,i)=>{const y=i*rowH+16, x=labW+(r.rate/max)*trackW, col=r.rate>mean?cssv('--serious'):cssv('--seq');
+    s+=`<text x="0" y="${y+4}" font-size="11.5" fill="${cssv('--ink-2')}">${esc(r.m)}</text>`;
+    s+=`<line x1="${labW}" x2="${x}" y1="${y}" y2="${y}" stroke="${cssv('--line')}" stroke-width="2" stroke-linecap="round"/>`;
+    s+=`<circle class="dotm" data-m="${esc(r.m)}" data-v="${r.rate}" data-n="${r.matters}" cx="${x}" cy="${y}" r="5.5" fill="${col}" stroke="${cssv('--surface')}" stroke-width="2"/>`;
+    s+=`<text x="${vw-2}" y="${y+4}" text-anchor="end" font-size="11.5" font-weight="600" fill="${cssv('--ink')}" style="font-variant-numeric:tabular-nums">${r.rate.toFixed(1)}</text>`;});
+  s+=`</svg>`; const el=$(sel); el.innerHTML=s;
+  el.querySelectorAll('.dotm').forEach(d=>{
+    d.addEventListener('mouseenter',e=>showTip(e,`<span class="tl">${esc(d.dataset.m)}</span><b>${d.dataset.v}</b> per 100 · ${d.dataset.n} matters`));
+    d.addEventListener('mousemove',moveTip); d.addEventListener('mouseleave',hideTip);});
+}
+/* before/after paired dumbbell */
+function impact(sel, rows){
+  const vw=660, labW=200, rowH=38, h=rows.length*rowH+26;
+  const max=Math.ceil(Math.max(...rows.flatMap(r=>[r.before,r.after]))/5)*5, trackW=vw-labW-56;
+  let s=`<svg viewBox="0 0 ${vw} ${h}" role="img" aria-label="Findings per 100 matters before and after each mitigation initiative">`;
+  rows.forEach((r,i)=>{
+    const y=i*rowH+16, xb=labW+(r.before/max)*trackW, xa=labW+(r.after/max)*trackW;
+    const better=r.after<r.before, delta=(r.after-r.before).toFixed(1);
+    s+=`<text x="0" y="${y-2}" font-size="11.5" fill="${cssv('--ink-2')}">${esc(r.name)}</text>`;
+    s+=`<text x="0" y="${y+11}" font-size="10" fill="${cssv('--muted')}">${esc(r.member)} · ${esc(r.q)}</text>`;
+    s+=`<line x1="${xb}" x2="${xa}" y1="${y+2}" y2="${y+2}" stroke="${better?cssv('--good'):cssv('--line')}" stroke-width="2.5" stroke-linecap="round"/>`;
+    s+=`<circle cx="${xb}" cy="${y+2}" r="5" fill="${cssv('--surface')}" stroke="${cssv('--muted')}" stroke-width="2"/>`;
+    s+=`<circle class="imp" data-n="${esc(r.name)}" data-b="${r.before}" data-a="${r.after}" cx="${xa}" cy="${y+2}" r="5.5" fill="${better?cssv('--good'):cssv('--serious')}" stroke="${cssv('--surface')}" stroke-width="2"/>`;
+    s+=`<text x="${vw-2}" y="${y+6}" text-anchor="end" font-size="11.5" font-weight="600" fill="${better?cssv('--good-ink'):cssv('--serious-ink')}" style="font-variant-numeric:tabular-nums">${delta}</text>`;});
+  s+=`<text x="${labW}" y="${h-4}" font-size="10" fill="${cssv('--muted')}">○ before initiative   ● since</text>`;
+  s+=`</svg>`; const el=$(sel); el.innerHTML=s;
+  el.querySelectorAll('.imp').forEach(d=>{
+    d.addEventListener('mouseenter',e=>showTip(e,`<span class="tl">${esc(d.dataset.n)}</span>before <b>${d.dataset.b}</b> → since <b>${d.dataset.a}</b> per 100`));
+    d.addEventListener('mousemove',moveTip); d.addEventListener('mouseleave',hideTip);});
+}
+
+/* ============ panels ============ */
+const KCOL={critical:'--critical',warning:'--warning',good:'--good',serious:'--serious'};
+$('#alerts').innerHTML = NEW_ITEMS.map(a=>`
+  <div class="alert"${a.id?` data-open="${a.id}" style="cursor:pointer"`:''}>
+    <span class="ic" style="background:color-mix(in srgb,var(${KCOL[a.k]}) 16%,transparent)">
+      <span style="width:7px;height:7px;border-radius:50%;background:var(${KCOL[a.k]});display:block"></span></span>
+    <div><div style="font-weight:500">${esc(a.t)}${a.id?' <span class="chip new">New</span>':''}</div>
+      <div style="color:var(--muted);font-size:11.5px;margin-top:2px">${esc(a.d)}</div></div>
+  </div>`).join('');
+
+$('#intake').innerHTML = `<div class="stack">${INTAKE.map(r=>`
+  <div class="mini"><span style="flex:1;color:var(--ink-2)">${esc(r[0])}</span><span class="b">${r[1].toLocaleString()}</span></div>`).join('')}
+  </div><p class="note">Last re-analysis 25 Sep 02:10. Median document-to-analysis: under 24 hours.</p>`;
+
+$('#soc-panel').innerHTML = `
+  <div class="stack" style="margin-bottom:10px">
+    <div class="mini"><span style="flex:1;color:var(--ink-2)">Findings with a potential standard-of-care concern</span><span class="b">${SOC.asserted+SOC.independent}</span></div>
+    <div class="mini"><span style="flex:1;color:var(--muted);font-size:11.5px">of ${SOC.total.toLocaleString()} findings</span></div>
+  </div>
+  <table><thead><tr><th>Basis</th><th class="r">Findings</th></tr></thead><tbody>
+  ${SOC.rows.map(r=>`<tr><td>${esc(r[0])}<br><span style="color:var(--muted);font-size:11px">${esc(r[2])}</span></td><td class="r num">${r[1]||'—'}</td></tr>`).join('')}
+  </tbody></table>
+  <p class="note">Whether the system forms an independent standard-of-care assessment, or only surfaces concerns already in the file, is an open decision for CHART and counsel.</p>`;
+
+$('#focus').innerHTML = FOCUS.map((f,i)=>`
+  <div style="padding:10px 0;border-bottom:1px solid var(--line-soft)">
+    <div style="display:flex;gap:8px;align-items:baseline">
+      <span class="mono" style="color:var(--muted);font-size:11px">${i+1}</span>
+      <div style="flex:1"><div style="font-weight:500">${esc(f.t)}</div>
+        <div style="color:var(--muted);font-size:11.5px;margin-top:2px">${esc(f.w)} · ${esc(f.why)}</div>
+        <div style="margin-top:5px"><span class="chip">${esc(f.act)}</span></div></div></div>
+  </div>`).join('');
+
+$('#value-panel').innerHTML = `
+  <table><thead><tr><th>Factor present in the file</th><th class="r">Assoc. severity</th></tr></thead><tbody>
+  ${VALUEFACTORS.map(v=>`<tr><td>${esc(v[0])}</td><td class="r num" style="${v[2]?'font-weight:600':''}">${esc(v[1])}</td></tr>`).join('')}
+  </tbody></table>
+  <p class="note">Multipliers are the ratio of median resolution value in CHART's converted archive when the factor is present. The system does not produce a value figure for an open matter.</p>`;
+
+$('#posture').innerHTML = POSTURE.map(p=>`
+  <div style="padding:9px 0;border-bottom:1px solid var(--line-soft)">
+    <div style="display:flex;align-items:baseline;gap:8px">
+      <span style="font-weight:500;flex:1">${esc(p.p)}</span>
+      <span class="pill ${p.n>=3?'r':'g'}">${p.n} factor${p.n>1?'s':''}</span></div>
+    <ul style="margin:5px 0 0;padding-left:16px;color:var(--ink-2);font-size:12px">
+      ${p.f.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+  </div>`).join('') + `<p class="note">The system surfaces factors. It does not recommend a posture.</p>`;
+
+$('#t-comp').innerHTML = `
+  <thead><tr><th>Matter</th><th>Year</th><th>Why comparable</th><th>Outcome</th><th>Match</th></tr></thead>
+  <tbody>${COMPARABLES.map(c=>`<tr>
+    <td class="mono">${c.id}</td><td class="num">${c.yr}</td>
+    <td>${c.dims.map(d=>`<span class="chip" style="margin:0 4px 4px 0">${esc(d)}</span>`).join('')}</td>
+    <td style="color:var(--ink-2)">${esc(c.out)}</td>
+    <td><span class="chip ${c.match==='High'?'sup':''}">${esc(c.match)}</span></td></tr>`).join('')}</tbody>`;
+
+$('#t-sig').innerHTML = `
+  <thead><tr><th>Matter</th><th>Why flagged</th><th>Historical band</th></tr></thead>
+  <tbody>${SIGNIFICANT.map(s=>`<tr class="clickable" data-id="${s.id}" tabindex="0">
+    <td><span class="mono">${s.id}</span><br><span style="color:var(--muted);font-size:11px">Member ${s.member}</span></td>
+    <td>${esc(s.why)}</td>
+    <td><span class="chip ${s.band==='Upper quartile'?'sup':''}">${esc(s.band)}</span></td></tr>`).join('')}</tbody>`;
+
+$('#t-process').innerHTML = `
+  <thead><tr><th>Measure</th><th class="r">Manual baseline</th><th class="r">With the platform</th><th class="r">Change</th></tr></thead>
+  <tbody>${PROCESS.map(r=>`<tr><td>${esc(r[0])}</td><td class="r num" style="color:var(--muted)">${esc(r[1])}</td>
+    <td class="r num" style="font-weight:600">${esc(r[2])}</td>
+    <td class="r num" style="color:${r[3].startsWith('−')?'var(--good-ink)':'var(--ink-2)'}">${esc(r[3]||'—')}</td></tr>`).join('')}</tbody>`;
+
+$('#t-reports').innerHTML = `
+  <thead><tr><th>Report</th><th>Audience</th><th>Frequency</th><th>Scope</th><th>Release</th></tr></thead>
+  <tbody>${REPORTS.map(r=>`<tr><td style="font-weight:500">${esc(r[0])}</td><td style="color:var(--ink-2)">${esc(r[1])}</td>
+    <td>${esc(r[2])}</td><td style="color:var(--ink-2)">${esc(r[3])}</td>
+    <td>${r[4]?'<span class="chip pso">MVP</span>':'<span style="color:var(--muted)">Catalogue</span>'}</td></tr>`).join('')}</tbody>`;
+
+$('#t-alerts').innerHTML = `
+  <thead><tr><th>Trigger</th><th>Recipient</th><th>Channel</th><th>Timing</th></tr></thead>
+  <tbody>${ALERTS_CFG.map(a=>`<tr><td>${esc(a[0])}</td><td style="color:var(--ink-2)">${esc(a[1])}</td>
+    <td>${esc(a[2])}</td><td>${esc(a[3])}</td></tr>`).join('')}</tbody>`;
+
+$('#dist').innerHTML = `<div class="stack">
+  <div class="mini"><span style="flex:1;color:var(--ink-2)">CHART-wide reports</span><span class="b">4</span></div>
+  <div class="mini"><span style="flex:1;color:var(--ink-2)">Per-member reports</span><span class="b">2</span></div>
+  <div class="mini"><span style="flex:1;color:var(--ink-2)">Members receiving directly</span><span class="b">0</span></div>
+  <div class="mini"><span style="flex:1;color:var(--ink-2)">Members receiving via CHART</span><span class="b">8</span></div>
+  </div>
+  <p class="note">Whether member hospitals receive output directly or CHART mediates is an open decision — it determines the permissioning and support model, and is better settled now than retrofitted.</p>`;
+
+$('#t-neg').innerHTML = `<thead><tr><th>Area examined</th><th class="r">Matters</th><th>Result</th></tr></thead>
+  <tbody>${NEGATIVE.map(r=>`<tr><td>${esc(r[0])}</td><td class="r num">${r[1]}</td><td style="color:var(--ink-2)">${esc(r[2])}</td></tr>`).join('')}</tbody>`;
+
+$('#t-members').innerHTML = `
+  <thead><tr><th>Member</th><th class="r">Matters</th><th class="r">Open</th><th class="r">Per 100</th><th>Leading category</th><th>Refocus activity</th></tr></thead>
+  <tbody>${MEMBERS.map((m,i)=>`<tr><td>${esc(m.m)}</td><td class="r num">${m.matters}</td><td class="r num">${m.open}</td>
+    <td class="r num" style="${m.rate>18.4?'color:var(--serious-ink);font-weight:600':''}">${m.rate.toFixed(1)}</td>
+    <td style="color:var(--ink-2)">${esc(["Abnormal result follow-up","Diagnosis — missed or delayed","Monitoring and failure to rescue","Transfer and handoff"][i%4])}</td>
+    <td>${m.refocus==='—'?'<span style="color:var(--muted)">—</span>':`<span class="chip">${esc(m.refocus)}</span>`}</td></tr>`).join('')}</tbody>`;
+
+$('#queue-summary').innerHTML = [['Supported — clinical issue asserted',9,'--critical'],
+  ['Recorded — visible, not yet supported',8,'--warning'],['Proposed — needs further material',6,'--muted']]
+  .map(r=>`<li><span style="width:8px;height:8px;border-radius:50%;background:var(${r[2]});flex:none;margin-top:7px"></span>
+  <span style="flex:1">${esc(r[0])}</span><span class="n">${r[1]}</span></li>`).join('') +
+  `<li style="border-top:1px solid var(--line);margin-top:4px;padding-top:11px">
+     <span class="chip pso">PSO submission candidates</span><span class="n" style="margin-left:auto">5</span></li>`;
+
+function priorityTable(){
+  const rows=FINDINGS.filter(f=>f.grade==='supported').slice(0,4);
+  $('#t-priority').innerHTML=`<thead><tr><th>Matter</th><th>Finding</th><th>Grade</th><th class="r">Severity</th></tr></thead>
+    <tbody>${rows.map(f=>`<tr class="clickable" data-id="${f.id}" tabindex="0">
+      <td><span class="mono">${f.id}</span><br><span style="color:var(--muted);font-size:11px">Member ${f.member} · ${esc(f.age)}</span></td>
+      <td><button class="rowbtn">${esc(f.title)}</button><br><span style="color:var(--muted);font-size:11px">${esc(f.cat)}</span></td>
+      <td>${gradeChip(f.grade)} ${socChip(f.soc)}</td>
+      <td class="r"><span class="sev"><span class="sevbar"><i style="width:${f.sev*10}%;background:var(${SEVCOL(f.sev)})"></i></span><span class="num">${f.sev}</span></span></td>
+    </tr>`).join('')}</tbody>`;
+}
+function devTable(){
+  $('#t-dev').innerHTML=`<thead><tr><th>Matter</th><th>Service</th><th>Finding</th><th>Grade</th><th class="r">Gaps</th><th class="r">Severity</th></tr></thead>
+    <tbody>${FINDINGS.map(f=>`<tr class="clickable" data-id="${f.id}" tabindex="0">
+      <td><span class="mono">${f.id}</span>${f.isNew?' <span class="chip new">New</span>':''}<br>
+        <span style="color:var(--muted);font-size:11px">Member ${f.member} · ${esc(f.age)}${f.sig?' · <span style="color:var(--critical-ink)">escalation signal</span>':''}</span></td>
+      <td>${esc(f.service)}</td>
+      <td><button class="rowbtn">${esc(f.title)}</button><br><span style="color:var(--muted);font-size:11px">${esc(f.cat)}</span></td>
+      <td>${gradeChip(f.grade)}${f.soc?'<br>'+socChip(f.soc):''}</td>
+      <td class="r num">${f.gaps||'—'}</td>
+      <td class="r"><span class="sev"><span class="sevbar"><i style="width:${f.sev*10}%;background:var(${SEVCOL(f.sev)})"></i></span><span class="num">${f.sev}</span></span></td>
+    </tr>`).join('')}</tbody>`;
+}
+
+/* ============ drawer ============ */
+const drawer=$('#drawer'), scrim=$('#scrim');
+function openFinding(id){
+  const f=FINDINGS.find(x=>x.id===id); if(!f) return;
+  const socLine = f.soc==='expert' ? 'Concern asserted in a retained expert report already in the file.'
+    : f.soc==='policy' ? "Assessed against the member's own written policy, produced in the file."
+    : 'No standard-of-care concern identified.';
+  drawer.innerHTML=`
+    <div class="dhead">
+      <div><div style="display:flex;gap:6px;align-items:center;margin-bottom:5px;flex-wrap:wrap">
+        <span class="mono" style="font-size:11.5px;color:var(--muted)">${f.id}</span>
+        ${gradeChip(f.grade)}${socChip(f.soc)}
+        ${f.sig?'<span class="chip sup">Escalation signal</span>':''}
+        <span class="chip pso">Protected — open claim</span></div>
+        <h3>${esc(f.title)}</h3></div>
+      <button class="x" id="dclose" aria-label="Close">&times;</button>
+    </div>
+    <div class="dsec"><h4>What the record shows</h4>
+      <div class="quote">${esc(f.text)}</div>
+      <div class="cite"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2h5l3 3v9H4z" stroke="currentColor" stroke-width="1.3"/><path d="M9 2v3h3" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span>${esc(f.src)}</span><button class="rowbtn" style="font-size:11.5px">Open source document</button></div></div>
+    <div class="dsec"><h4>Chronology from the record</h4>
+      <ul class="tl">${f.chron.map(c=>`<li class="${c[2]?'hit':''}"><span class="t">${esc(c[0])}</span><span class="e">${esc(c[1])}</span></li>`).join('')}</ul>
+      <p class="note">Marked entries are those the finding rests on. The timeline is built from the record; the finding is what the timeline alone does not give you.</p></div>
+    <div class="dsec"><h4>Why it was identified</h4>
+      <p style="margin:0;font-size:12.5px;color:var(--ink-2)">${esc(f.why)}</p></div>
+    <div class="dsec"><h4>Standard of care</h4>
+      <p style="margin:0;font-size:12.5px;color:var(--ink-2)">${esc(socLine)}</p></div>
+    <div class="dsec"><h4>Coding</h4>
+      <dl class="kv">
+        <dt>Major allegation</dt><dd>${esc(f.cat)}</dd>
+        <dt>Responsible service</dt><dd>${esc(f.service)}</dd>
+        <dt>Contributing factors</dt><dd>${f.factors.map(x=>`<span class="chip" style="margin:0 4px 4px 0">${esc(x)}</span>`).join('')}</dd>
+        <dt>Clinical severity</dt><dd><span class="sev"><span class="sevbar"><i style="width:${f.sev*10}%;background:var(${SEVCOL(f.sev)})"></i></span><span class="num">${f.sev} of 9</span></span></dd>
+        <dt>Information gaps</dt><dd>${f.gaps?f.gaps+' open':'None recorded'}</dd>
+      </dl></div>
+    <div class="dsec" style="border-bottom:0"><h4>Disposition required</h4>
+      <p style="margin:0;font-size:12px;color:var(--ink-2)">Findings on open claims do not rest in the analytics environment. A named reviewer must dispose of this one.</p></div>
+    <div class="acts">
+      <button class="act primary">Submit to PSO</button>
+      <button class="act">Retain as work product</button>
+      <button class="act">Discard</button></div>
+    <p class="dnote">Prototype — controls are not wired. Designations, reviewer roles and what remains after PSO submission are open items for counsel and the PSO (parameter P.4).</p>`;
+  drawer.hidden=false; scrim.hidden=false;
+  requestAnimationFrame(()=>{drawer.classList.add('on');scrim.classList.add('on');});
+  $('#dclose').focus(); $('#dclose').addEventListener('click',closeDrawer);
+}
+function closeDrawer(){drawer.classList.remove('on');scrim.classList.remove('on');
+  setTimeout(()=>{drawer.hidden=true;scrim.hidden=true;},200);}
+scrim.addEventListener('click',closeDrawer);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!drawer.hidden)closeDrawer();});
+document.addEventListener('click',e=>{
+  const tr=e.target.closest('tr.clickable'); if(tr){openFinding(tr.dataset.id);return;}
+  const al=e.target.closest('[data-open]'); if(al)openFinding(al.dataset.open);});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.closest){const tr=e.target.closest('tr.clickable'); if(tr)openFinding(tr.dataset.id);}});
+
+/* ============ release staging ============ */
+const STAGE_LABEL={mvp:'First release', p1:'Phase 1', p1a:'Phase 1A', road:'Roadmap'};
+const STAGE_IN={ all:['mvp','p1','p1a','road'], p1:['mvp','p1'], mvp:['mvp'] };
+let STAGE_FILTER='all';
+
+document.querySelectorAll('.card[data-stage]').forEach(c=>{
+  const st=c.dataset.stage, h=c.querySelector('header');
+  if(h && !h.querySelector('.stg')){
+    const el=document.createElement('span');
+    el.className='stg '+st; el.textContent=STAGE_LABEL[st];
+    const hint=h.querySelector('.hint');
+    if(hint) hint.after(el); else h.appendChild(el);
+  }
+});
+
+function applyStage(){
+  const allow=STAGE_IN[STAGE_FILTER];
+  let shown=0, total=0;
+  document.querySelectorAll('.card[data-stage]').forEach(c=>{
+    total++; const ok=allow.includes(c.dataset.stage);
+    c.hidden=!ok; if(ok) shown++;
+  });
+  document.querySelectorAll('.stage-note[data-stage]').forEach(n=>{
+    n.hidden=!allow.includes(n.dataset.stage);
+  });
+  // empty states + tab dimming
+  PANELS.forEach(p=>{
+    const sec=$('#'+p);
+    const vis=[...sec.querySelectorAll('.card[data-stage]')].some(c=>!c.hidden);
+    let ph=sec.querySelector('.emptystate');
+    if(!vis){
+      if(!ph){ ph=document.createElement('div'); ph.className='emptystate';
+        ph.innerHTML='<b>Nothing in this view is in the selected release.</b>Switch to Full capability to see what this view will hold.';
+        sec.appendChild(ph); }
+      ph.hidden=false;
+    } else if(ph) ph.hidden=true;
+    const tab=document.querySelector(`nav.tabs button[data-tab="${p}"]`);
+    if(tab) tab.classList.toggle('empty', !vis);
+  });
+  $('#stagecount').textContent = STAGE_FILTER==='all'
+    ? `${total} views · everything CHART's objectives ask for`
+    : `${shown} of ${total} views`;
+}
+document.querySelectorAll('.seg button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    STAGE_FILTER=b.dataset.f;
+    document.querySelectorAll('.seg button').forEach(x=>x.setAttribute('aria-pressed', x===b));
+    applyStage();
+  });
+});
+
+/* ============ tabs ============ */
+const PANELS=['overview','clinical','developing','claims','mitigation','members','reports'];
+document.querySelectorAll('nav.tabs button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('nav.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
+    PANELS.forEach(p=>$('#'+p).hidden=(p!==b.dataset.tab));
+    try{location.hash=b.dataset.tab;}catch(e){}
+    window.scrollTo({top:0,behavior:'instant'});});
+});
+
+/* ============ render ============ */
+function renderAll(){
+  hbar('#c-cat',CATS,{aria:'Findings by clinical category'});
+  hbar('#c-cat-mini',CATS.slice(0,5),{labW:200,aria:'Leading clinical categories'});
+  hbar('#c-factor',FACTORS,{labW:190,unit:'%',aria:'Contributing factors'});
+  hbar('#c-service',SERVICES,{labW:170,aria:'Findings by responsible service'});
+  hbar('#c-gaps',GAPS,{labW:190,aria:'Information gaps'});
+  hbar('#c-liab',LIABILITY,{labW:210,aria:'Liability factors across open matters'});
+  vbar('#c-sev',SEVERITY,{aria:'Clinical severity distribution'});
+  vbar('#c-age',AGE,{aria:'Open matter age'});
+  lines('#c-trend',QUARTERS,TREND);
+  lolli('#c-members',MEMBERS);
+  impact('#c-impact',IMPACT);
+  priorityTable(); devTable();
+}
+renderAll();
+applyStage();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',renderAll);
+const h=(location.hash||'').replace('#','');
+if(PANELS.includes(h))document.querySelector(`nav.tabs button[data-tab="${h}"]`).click();
+</script>
+
+<style>
+#welcome{position:fixed;inset:0;z-index:120;background:rgba(9,14,19,.62);display:grid;place-items:center;padding:20px}
+#welcome .wc{max-width:520px;background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  box-shadow:0 12px 48px rgba(9,14,19,.28);padding:26px 26px 22px}
+#welcome h2{margin:0 0 4px;font-size:19px;font-weight:600;letter-spacing:-.01em}
+#welcome .k{font-size:12px;color:var(--muted);margin:0 0 16px}
+#welcome p{margin:0 0 13px;font-size:13.5px;color:var(--ink-2);line-height:1.6}
+#welcome ul{margin:0 0 18px;padding-left:18px;font-size:13px;color:var(--ink-2);line-height:1.65}
+#welcome li{margin-bottom:5px}
+#welcome b{color:var(--ink)}
+#welcome .go{appearance:none;border:0;background:var(--accent);color:var(--accent-ink);
+  font:inherit;font-size:13.5px;font-weight:600;padding:11px 18px;border-radius:9px;cursor:pointer;width:100%}
+#welcome .go:hover{filter:brightness(1.08)}
+#welcome .sy{display:flex;gap:9px;align-items:flex-start;background:color-mix(in srgb,var(--warning) 12%,transparent);
+  border:1px solid color-mix(in srgb,var(--warning) 40%,transparent);border-radius:9px;padding:10px 12px;
+  font-size:12.5px;color:var(--ink-2);margin:0 0 16px}
+</style>
+<div id="welcome" hidden>
+  <div class="wc" role="dialog" aria-modal="true" aria-labelledby="wtitle">
+    <h2 id="wtitle">CHART Risk Intelligence</h2>
+    <p class="k">Working prototype · MAPS Technologies</p>
+    <div class="sy"><div><b>Every number here is invented.</b> This is a design prototype built to agree what the platform should show. No CHART claim information has been processed.</div></div>
+    <p>It is built against CHART&rsquo;s own Statement of Work objectives — each panel is labelled with the objective it serves, so you can check coverage against your document.</p>
+    <ul>
+      <li><b>Seven tabs</b> across the top, from the daily working view through to reports.</li>
+      <li><b>Click any row</b> in a table to see the finding, the record it came from, and the page it was cited to.</li>
+      <li><b>Use the Show control</b> to switch between the full capability and what the first release would actually deliver.</li>
+    </ul>
+    <button class="go" id="wgo">Explore the prototype</button>
+  </div>
+</div>
+<script>
+(function(){
+  var w=document.getElementById('welcome'), seen=false;
+  try{ seen = localStorage.getItem('chart_welcome')==='1'; }catch(e){}
+  if(!seen){ w.hidden=false; document.getElementById('wgo').focus(); }
+  document.getElementById('wgo').addEventListener('click',function(){
+    w.hidden=true; try{ localStorage.setItem('chart_welcome','1'); }catch(e){}
+  });
+})();
+</script>
+
+</body>
+</html>

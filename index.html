@@ -120,9 +120,16 @@ nav.tabs button.empty::after{content:"";display:inline-block;width:4px;height:4p
   margin-top:16px; font-size:12.5px; color:var(--ink-2);}
 .notice b{color:var(--ink)}
 
-.kpis{display:grid; grid-template-columns:repeat(6,1fr); gap:1px; background:var(--line);
-  border:1px solid var(--line); border-radius:var(--r); overflow:hidden; margin-top:16px}
-.kpi{background:var(--surface); padding:13px 14px 12px}
+.kpis{display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:16px}
+.kpi{background:var(--surface-2); border:1px solid var(--line); border-radius:8px;
+  padding:13px 14px 12px; text-align:left; font:inherit; color:inherit; cursor:pointer;
+  position:relative; transition:background .12s, border-color .12s, box-shadow .12s;}
+.kpi:hover{background:var(--surface); border-color:var(--accent-line); box-shadow:var(--shadow)}
+.kpi:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.kpi::after{content:"";position:absolute;right:11px;top:13px;width:6px;height:6px;
+  border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);
+  transform:rotate(-45deg);opacity:0;transition:opacity .12s}
+.kpi:hover::after{opacity:1}
 .kpi .lab{font-size:11px; color:var(--muted); letter-spacing:.02em; display:block; margin-bottom:6px}
 .kpi .val{font-size:25px; font-weight:600; letter-spacing:-.02em; line-height:1.1}
 .kpi .val small{font-size:14px; font-weight:500; color:var(--ink-2); margin-left:2px}
@@ -142,6 +149,11 @@ main{padding-bottom:56px}
 .card .lead{font-size:12px; color:var(--ink-2); padding:4px 15px 0; margin:0}
 
 .chart svg{display:block; width:100%; height:auto; overflow:visible}
+.chart.capped svg{max-width:560px}
+.bar.hit{cursor:pointer}
+.bar.hit:hover{opacity:.82}
+.bt{display:flex;align-items:baseline;gap:8px;font-size:12.5px;color:var(--ink-2);padding:0 0 10px}
+.bt b{font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
 .legend{display:flex; gap:14px; flex-wrap:wrap; font-size:11.5px; color:var(--ink-2); padding:0 15px 2px}
 .legend i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:-1px}
 #tip{position:fixed; z-index:90; pointer-events:none; opacity:0; transform:translate(-50%,-120%);
@@ -263,6 +275,7 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
       <button role="tab" aria-selected="false" data-tab="mitigation">Mitigation &amp; trends</button>
       <button role="tab" aria-selected="false" data-tab="members">Members</button>
       <button role="tab" aria-selected="false" data-tab="reports">Reports</button>
+      <button role="tab" aria-selected="false" data-tab="scopemethod">Scope &amp; method</button>
     </nav>
   </div>
 </header>
@@ -297,7 +310,7 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
 
     <div class="grid g-32">
       <div class="card" data-stage="mvp">
-        <header><h2>Priority queue</h2><span class="hint">Select a row for the finding and its source</span></header>
+        <header><h2>Priority queue</h2><span class="hint">Objectives 1.2 &amp; 1A.7 · select a row for the source</span></header>
         <p class="lead">Developing matters where the analysis has surfaced a supported clinical issue.</p>
         <div class="body tscroll"><table id="t-priority"></table></div>
       </div>
@@ -325,19 +338,19 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
 
     <div class="grid g-2">
       <div class="card" data-stage="p1">
-        <header><h2>Contributing factors</h2><span class="hint">Share of findings</span></header>
+        <header><h2>Contributing factors</h2><span class="hint">Objective 1.2 · share of findings</span></header>
         <p class="lead">Operational factors appear alongside clinical acts, which is where mitigation usually lands.</p>
         <div class="body chart" id="c-factor"></div>
       </div>
       <div class="card" data-stage="p1">
-        <header><h2>Responsible service</h2><span class="hint">Findings per service line</span></header>
+        <header><h2>Responsible service</h2><span class="hint">Objective 1.2 · findings per service line</span></header>
         <div class="body chart" id="c-service"></div>
       </div>
     </div>
 
     <div class="grid g-2">
       <div class="card" data-stage="p1">
-        <header><h2>Clinical severity of underlying injury</h2><span class="hint">NAIC severity scale · matters</span></header>
+        <header><h2>Clinical severity of underlying injury</h2><span class="hint">Objective 1A.2 · NAIC severity scale</span></header>
         <div class="body chart" id="c-sev"></div>
       </div>
       <div class="card" data-stage="mvp">
@@ -368,8 +381,9 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
       </div>
     </div>
     <div class="card" data-stage="p1" style="margin-top:14px">
-      <header><h2>Open matter age</h2><span class="hint">Months since report</span></header>
-      <div class="body chart" id="c-age"></div>
+      <header><h2>Open matter age</h2><span class="hint">Objective 1.4 · months since report · 47 open</span></header>
+      <p class="lead">Select a band to list the matters in it.</p>
+      <div class="body chart capped" id="c-age"></div>
     </div>
   </section>
 
@@ -446,7 +460,7 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
       <div class="body chart" id="c-members"></div>
     </div>
     <div class="card" data-stage="p1" style="margin-top:14px">
-      <header><h2>Member detail</h2><span class="hint">Mitigation activity is recorded against the findings that prompted it</span></header>
+      <header><h2>Member detail</h2><span class="hint">Objectives 1.5 &amp; 1.6</span></header>
       <div class="body tscroll"><table id="t-members"></table></div>
     </div>
   </section>
@@ -465,8 +479,31 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
         <div class="body tscroll"><table id="t-alerts"></table></div>
       </div>
       <div class="card" data-stage="p1">
-        <header><h2>Distribution</h2><span class="hint">CHART-wide and individual hospital reporting</span></header>
+        <header><h2>Distribution</h2><span class="hint">Objective 1.9 · CHART-wide and per hospital</span></header>
         <div class="body" id="dist"></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================= SCOPE & METHOD ================= -->
+  <section id="scopemethod" hidden>
+    <div class="card" data-stage="mvp">
+      <header><h2>Scope boundaries</h2><span class="hint">Parameters P.1, P.2, P.3 &amp; P.5</span></header>
+      <p class="lead">The limits CHART set in its own objectives. Each is a design constraint in the platform, not a statement of intent.</p>
+      <div class="body tscroll"><table id="t-bounds"></table></div>
+    </div>
+
+    <div class="grid g-32">
+      <div class="card" data-stage="mvp">
+        <header><h2>How success is measured</h2><span class="hint">Summary objective S.3 · proof of concept POC.1, POC.2, POC.5</span></header>
+        <p class="lead">CHART's test is whether the system goes beyond summaries and timelines to surface what would otherwise need significant manual review.</p>
+        <div class="body" id="method"></div>
+      </div>
+      <div class="card" data-stage="road">
+        <header><h2>Phase 2 — carried forward</h2><span class="hint">Objectives 2.1–2.5 · not in this engagement</span></header>
+        <p class="lead">Event reporting and the PSES depend on member participation and a legal structure not yet in place. Deferred deliberately; the Phase 1 data model does not foreclose any of it.</p>
+        <div class="body" id="phase2"></div>
       </div>
     </div>
   </section>
@@ -483,12 +520,12 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
 <script>
 /* ============ data (synthetic) ============ */
 const KPI = [
-  {lab:"Matters analyzed", val:"312", d:"47 open · 265 closed"},
-  {lab:"Findings, 24 months", val:"1,140", d:"↑ 8% vs prior period", cls:"up"},
-  {lab:"Awaiting disposition", val:"23", d:"6 over 5 days", cls:"up"},
-  {lab:"Incurred indemnity", val:"$28.6", sub:"M", d:"paid + case reserves"},
+  {lab:"Matters Analyzed", val:"312", d:"47 open · 265 closed"},
+  {lab:"Findings, 24 Months", val:"1,140", d:"↑ 8% vs prior period", cls:"up"},
+  {lab:"Awaiting Disposition", val:"23", d:"6 over 5 days", cls:"up"},
+  {lab:"Incurred Indemnity", val:"$28.6", sub:"M", d:"Paid + case reserves"},
   {lab:"Incurred ALAE", val:"$12.6", sub:"M", d:"31% of total incurred"},
-  {lab:"Report-to-close", val:"26", sub:"mo", d:"median, closed matters"}
+  {lab:"Report-to-Close", val:"26", sub:"mo", d:"Median, closed matters"}
 ];
 
 const CATS = [["Diagnosis — missed or delayed",268],["Abnormal result follow-up",196],["Surgical / procedural performance",154],
@@ -644,6 +681,36 @@ const NEGATIVE = [["Consent documentation",312,"Reviewed in every matter; 62 fin
   ["Equipment and device records",104,"Reviewed where present; no findings raised"],
   ["Restraint documentation",46,"Reviewed where present; no findings raised"]];
 
+/* ---- scope, method and Phase 2 reference data ---- */
+const BOUNDS=[
+ ["P.1","CHART's claims system remains the system of record",
+  "GPS reads from the claims system and writes nothing back. No claim intake, reserves, payments, litigation tracking, counsel assignments or routine claims administration appears anywhere in this platform.","Enforced"],
+ ["P.2","No direct access to member hospital systems in Phase 1",
+  "Every figure here derives from claim information and documents CHART already holds, under CHART's own privilege. No member hospital system is connected.","Enforced"],
+ ["P.3","Credentialing analytics is not a Phase 1 priority",
+  "The platform makes no credentialing or peer-review determination, and holds no credentialing data. MAPS proposes this as a standing boundary rather than a deferral.","Out of scope"],
+ ["P.5","AI supports professional judgment",
+  "No autonomous action. A finding changes nothing on its own — no status change, no reserve movement, no member notification. Every finding is inert until a named professional dispositions it, and the disposition is the operative record.","Enforced"]];
+const NOACT=["No determination of negligence or fault",
+ "No system-generated settlement figure or value range on an open matter",
+ "No scoring of individual practitioners, defense counsel, or CHART's own professionals",
+ "No credentialing or peer-review determinations",
+ "No autonomous action — the system surfaces, a professional decides",
+ "No clinical decision support to treating clinicians"];
+const METHOD=[
+ ["Define by example, not definition","CHART professionals mark up an agreed set of closed matters with what they would have wanted flagged. That set becomes the standard.","S.3"],
+ ["Hold a blind evaluation set","A further set is held back unseen and compared against the expert findings and committee determinations already in those files.","POC.1"],
+ ["Agree the criteria before build","The capability list and the evaluation method are written and signed before development begins.","POC.2"],
+ ["Report what was missed","Results include the findings the system did not surface, not only those it did.","S.3"],
+ ["CHART decides at the gate","Results, value, scope and cost are weighed before anything further is committed.","POC.5"],
+ ["No commitment implied","The first piece of work is not a commitment to a full implementation or a longer-term agreement.","POC.6"]];
+const PHASE2=[
+ ["2.1","Disclosed patient safety work product","Extend the clinical analysis to member hospital event-reporting systems."],
+ ["2.2","Analysis through a PSES","Deliberations conducted under the auspices of the CHART Institute PSO."],
+ ["2.3","Claims and event reporting together","The one item with a live Phase 1 consequence — it affects how the two data sets are keyed and separated now."],
+ ["2.4","PSES governance and access controls","How disclosed work product is accessed, analyzed, stored and communicated."],
+ ["2.5","CHART-wide and member patient safety trends","Aggregated across participating members to support targeted and system-wide intervention."]];
+
 /* ============ helpers ============ */
 const $ = s => document.querySelector(s);
 const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -658,9 +725,10 @@ const gradeChip = g => {const[c,l]=GRADE[g];return `<span class="chip ${c}">${l}
 const socChip = s => s ? `<span class="chip soc">Standard of care</span>` : '';
 
 /* ============ KPI ============ */
-$('#kpis').innerHTML = KPI.map(k=>`<div class="kpi"><span class="lab">${esc(k.lab)}</span>
+$('#kpis').innerHTML = KPI.map((k,i)=>`<button class="kpi" data-kpi="${i}" type="button">
+  <span class="lab">${esc(k.lab)}</span>
   <div class="val num">${esc(k.val)}${k.sub?`<small>${esc(k.sub)}</small>`:''}</div>
-  <div class="delta ${k.cls||''}">${esc(k.d)}</div></div>`).join('');
+  <div class="delta ${k.cls||''}">${esc(k.d)}</div></button>`).join('');
 
 /* ============ charts ============ */
 function hbar(sel, rows, opt){
@@ -671,12 +739,13 @@ function hbar(sel, rows, opt){
   rows.forEach((r,i)=>{ const y=i*rowH+2, w=Math.max(2,(r[1]/max)*trackW);
     s+=`<text x="0" y="${y+barH+1}" font-size="11.5" fill="${cssv('--ink-2')}">${esc(r[0])}</text>`;
     s+=`<rect x="${labW}" y="${y}" width="${trackW}" height="${barH}" rx="4" fill="${cssv('--line-soft')}"/>`;
-    s+=`<rect class="bar" data-l="${esc(r[0])}" data-v="${r[1]}${unit}" x="${labW}" y="${y}" width="${w}" height="${barH}" rx="4" fill="${fill}"/>`;
+    s+=`<rect class="bar${opt.onBar?' hit':''}" data-l="${esc(r[0])}" data-v="${r[1]}${unit}" x="${labW}" y="${y}" width="${w}" height="${barH}" rx="4" fill="${fill}"/>`;
     s+=`<text x="${labW+trackW+8}" y="${y+barH+1}" font-size="11.5" font-weight="600" fill="${cssv('--ink')}" style="font-variant-numeric:tabular-nums">${r[1]}${unit}</text>`;});
   s+=`</svg>`; const el=$(sel); el.innerHTML=s;
   el.querySelectorAll('.bar').forEach(b=>{
-    b.addEventListener('mouseenter',e=>showTip(e,`<span class="tl">${esc(b.dataset.l)}</span><b>${esc(b.dataset.v)}</b>`));
-    b.addEventListener('mousemove',moveTip); b.addEventListener('mouseleave',hideTip);});
+    b.addEventListener('mouseenter',e=>showTip(e,`<span class="tl">${esc(b.dataset.l)}</span><b>${esc(b.dataset.v)}</b>${opt.onBar?' · click to list':''}`));
+    b.addEventListener('mousemove',moveTip); b.addEventListener('mouseleave',hideTip);
+    if(opt.onBar) b.addEventListener('click',()=>{hideTip();opt.onBar(b.dataset.l,b.dataset.v);});});
 }
 function vbar(sel, rows, opt){
   opt=opt||{}; const vw=560, plotH=150, padL=4, padB=42, n=rows.length;
@@ -686,15 +755,16 @@ function vbar(sel, rows, opt){
     s+=`<line x1="0" x2="${vw}" y1="${y}" y2="${y}" stroke="${cssv('--line-soft')}" stroke-width="1"/>`;
     s+=`<text x="0" y="${y-4}" font-size="10" fill="${cssv('--muted')}" style="font-variant-numeric:tabular-nums">${Math.round(t*max)}</text>`;});
   rows.forEach((r,i)=>{const bh=Math.max(2,(r[1]/max)*plotH), x=padL+i*colW+(colW-bw)/2, y=18+plotH-bh;
-    s+=`<rect class="bar" data-l="${esc(r[0])}" data-v="${r[1]}" x="${x}" y="${y}" width="${bw}" height="${bh}" rx="4" fill="${opt.color||'var(--seq)'}"/>`;
+    s+=`<rect class="bar${opt.onBar?' hit':''}" data-l="${esc(r[0])}" data-v="${r[1]}" x="${x}" y="${y}" width="${bw}" height="${bh}" rx="4" fill="${opt.color||'var(--seq)'}"/>`;
     s+=`<text x="${x+bw/2}" y="${y-5}" text-anchor="middle" font-size="11" font-weight="600" fill="${cssv('--ink')}" style="font-variant-numeric:tabular-nums">${r[1]}</text>`;
     const w=String(r[0]).split(' '), l1=w.slice(0,2).join(' '), l2=w.slice(2).join(' ');
     s+=`<text x="${x+bw/2}" y="${18+plotH+15}" text-anchor="middle" font-size="10.5" fill="${cssv('--muted')}">${esc(l1)}</text>`;
     if(l2) s+=`<text x="${x+bw/2}" y="${18+plotH+27}" text-anchor="middle" font-size="10.5" fill="${cssv('--muted')}">${esc(l2)}</text>`;});
   s+=`</svg>`; const el=$(sel); el.innerHTML=s;
   el.querySelectorAll('.bar').forEach(b=>{
-    b.addEventListener('mouseenter',e=>showTip(e,`<span class="tl">${esc(b.dataset.l)}</span><b>${esc(b.dataset.v)} matters</b>`));
-    b.addEventListener('mousemove',moveTip); b.addEventListener('mouseleave',hideTip);});
+    b.addEventListener('mouseenter',e=>showTip(e,`<span class="tl">${esc(b.dataset.l)}</span><b>${esc(b.dataset.v)} matters</b>${opt.onBar?' · click to list':''}`));
+    b.addEventListener('mousemove',moveTip); b.addEventListener('mouseleave',hideTip);
+    if(opt.onBar) b.addEventListener('click',()=>{hideTip();opt.onBar(b.dataset.l);});});
 }
 function lines(sel, cats, series){
   const vw=700, plotH=190, padL=30, padR=12, top=12;
@@ -717,14 +787,17 @@ function lines(sel, cats, series){
   s+=`</svg>`; const el=$(sel); el.innerHTML=s;
   const svg=el.querySelector('svg');
   const cross=document.createElementNS('http://www.w3.org/2000/svg','line');
-  cross.setAttribute('stroke',cssv('--line')); cross.setAttribute('stroke-width','1'); cross.setAttribute('opacity','0'); svg.appendChild(cross);
+  cross.setAttribute('stroke',cssv('--line')); cross.setAttribute('stroke-width','1');
+  cross.setAttribute('opacity','0'); cross.setAttribute('pointer-events','none'); svg.appendChild(cross);
   el.querySelectorAll('.hit').forEach(h=>{
     h.addEventListener('mouseenter',e=>{const i=+h.dataset.i;
       cross.setAttribute('x1',X(i));cross.setAttribute('x2',X(i));cross.setAttribute('y1',top);cross.setAttribute('y2',top+plotH);cross.setAttribute('opacity','1');
       showTip(e,`<span class="tl">${esc(cats[i])}</span>`+series.map(se=>
         `<div><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${cssv(se.color)};margin-right:6px"></i>${esc(se.name.split(' —')[0])} <b>${se.v[i]}</b></div>`).join(''));});
     h.addEventListener('mousemove',moveTip);
-    h.addEventListener('mouseleave',()=>{cross.setAttribute('opacity','0');hideTip();});});
+    h.addEventListener('mouseleave',()=>{cross.setAttribute('opacity','0');hideTip();});
+    h.style.cursor='pointer';
+    h.addEventListener('click',()=>{hideTip();openQuarter(+h.dataset.i);});});
   $('#l-trend').innerHTML=series.map(se=>`<span><i style="background:${cssv(se.color)}"></i>${esc(se.name)}</span>`).join('');
 }
 function lolli(sel, rows){
@@ -741,8 +814,10 @@ function lolli(sel, rows){
     s+=`<text x="${vw-2}" y="${y+4}" text-anchor="end" font-size="11.5" font-weight="600" fill="${cssv('--ink')}" style="font-variant-numeric:tabular-nums">${r.rate.toFixed(1)}</text>`;});
   s+=`</svg>`; const el=$(sel); el.innerHTML=s;
   el.querySelectorAll('.dotm').forEach(d=>{
-    d.addEventListener('mouseenter',e=>showTip(e,`<span class="tl">${esc(d.dataset.m)}</span><b>${d.dataset.v}</b> per 100 · ${d.dataset.n} matters`));
-    d.addEventListener('mousemove',moveTip); d.addEventListener('mouseleave',hideTip);});
+    d.style.cursor='pointer';
+    d.addEventListener('mouseenter',e=>showTip(e,`<span class="tl">${esc(d.dataset.m)}</span><b>${d.dataset.v}</b> per 100 · ${d.dataset.n} matters · click to list`));
+    d.addEventListener('mousemove',moveTip); d.addEventListener('mouseleave',hideTip);
+    d.addEventListener('click',()=>{hideTip();openMember(d.dataset.m,d.dataset.v,d.dataset.n);});});
 }
 /* before/after paired dumbbell */
 function impact(sel, rows){
@@ -761,8 +836,10 @@ function impact(sel, rows){
   s+=`<text x="${labW}" y="${h-4}" font-size="10" fill="${cssv('--muted')}">○ before initiative   ● since</text>`;
   s+=`</svg>`; const el=$(sel); el.innerHTML=s;
   el.querySelectorAll('.imp').forEach(d=>{
-    d.addEventListener('mouseenter',e=>showTip(e,`<span class="tl">${esc(d.dataset.n)}</span>before <b>${d.dataset.b}</b> → since <b>${d.dataset.a}</b> per 100`));
-    d.addEventListener('mousemove',moveTip); d.addEventListener('mouseleave',hideTip);});
+    d.style.cursor='pointer';
+    d.addEventListener('mouseenter',e=>showTip(e,`<span class="tl">${esc(d.dataset.n)}</span>before <b>${d.dataset.b}</b> → since <b>${d.dataset.a}</b> per 100 · click for detail`));
+    d.addEventListener('mousemove',moveTip); d.addEventListener('mouseleave',hideTip);
+    d.addEventListener('click',()=>{hideTip();openInitiative(d.dataset.n);});});
 }
 
 /* ============ panels ============ */
@@ -870,6 +947,29 @@ $('#queue-summary').innerHTML = [['Supported — clinical issue asserted',9,'--c
   `<li style="border-top:1px solid var(--line);margin-top:4px;padding-top:11px">
      <span class="chip pso">PSO submission candidates</span><span class="n" style="margin-left:auto">5</span></li>`;
 
+$('#t-bounds').innerHTML = `
+  <thead><tr><th>Parameter</th><th>CHART's boundary</th><th>How the platform holds it</th><th>Status</th></tr></thead>
+  <tbody>${BOUNDS.map(b=>`<tr><td><span class="mono">${b[0]}</span></td>
+    <td style="font-weight:500">${esc(b[1])}</td><td style="color:var(--ink-2)">${esc(b[2])}</td>
+    <td><span class="chip ${b[3]==='Enforced'?'pso':''}">${esc(b[3])}</span></td></tr>`).join('')}</tbody>`;
+
+$('#method').innerHTML = METHOD.map(m=>`
+  <div style="padding:10px 0;border-bottom:1px solid var(--line-soft)">
+    <div style="display:flex;gap:8px;align-items:baseline">
+      <span style="font-weight:500;flex:1">${esc(m[0])}</span>
+      <span class="chip">${esc(m[2])}</span></div>
+    <div style="color:var(--ink-2);font-size:12px;margin-top:3px">${esc(m[1])}</div></div>`).join('')
+  + `<h4 style="margin:16px 0 8px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">What the system will not do — parameter P.5</h4>`
+  + NOACT.map(x=>`<div class="li" style="padding:6px 0"><span style="color:var(--muted)">—</span><span>${esc(x)}</span></div>`).join('');
+
+$('#phase2').innerHTML = PHASE2.map(p=>`
+  <div style="padding:10px 0;border-bottom:1px solid var(--line-soft)">
+    <div style="display:flex;gap:8px;align-items:baseline">
+      <span class="mono" style="font-size:11px;color:var(--muted)">${p[0]}</span>
+      <span style="font-weight:500;flex:1">${esc(p[1])}</span></div>
+    <div style="color:var(--ink-2);font-size:12px;margin-top:3px">${esc(p[2])}</div></div>`).join('')
+  + `<p class="note">Priced separately when the conditions for it exist. Adopting AHRQ Common Formats as the event-reporting schema is the one decision worth taking now.</p>`;
+
 function priorityTable(){
   const rows=FINDINGS.filter(f=>f.grade==='supported').slice(0,4);
   $('#t-priority').innerHTML=`<thead><tr><th>Matter</th><th>Finding</th><th>Grade</th><th class="r">Severity</th></tr></thead>
@@ -894,9 +994,167 @@ function devTable(){
 }
 
 /* ============ drawer ============ */
+/* ---- open-matter register: every band on the age chart resolves to matters ---- */
+const BANDS=[["0\u20136 mo",12,1,6],["7\u201312 mo",11,7,12],["13\u201324 mo",13,13,24],["25\u201336 mo",7,25,36],["37+ mo",4,37,52]];
+const MEMBERS_L=["A","B","C","D","E","F","G","H"];
+const OPEN=[];(function(){
+  let seed=20260925; const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff;};
+  const pick=a=>a[Math.floor(rnd()*a.length)];
+  const seeded=FINDINGS.map(f=>({...f,ageM:parseInt(f.age)||1,tpl:f}));
+  let n=2430;
+  BANDS.forEach(([lab,count,lo,hi])=>{
+    const mine=seeded.filter(f=>f.ageM>=lo&&f.ageM<=hi);
+    mine.forEach(f=>OPEN.push({...f,band:lab,factors:f.factors||[],
+      gapTypes:f.gaps?[GAPS[0][0]]:[], liab:[LIABILITY[0][0]], quarter:QUARTERS[QUARTERS.length-1]}));
+    for(let i=mine.length;i<count;i++){
+      const t=pick(FINDINGS); n+=Math.floor(rnd()*9)+3;
+      const ageM=lo+Math.floor(rnd()*(hi-lo+1));
+      const sv=2+Math.floor(rnd()*8), ng=Math.floor(rnd()*4);
+      OPEN.push({id:"CH-"+n, member:pick(MEMBERS_L), service:t.service, cat:t.cat,
+        grade:pick(["supported","supported","recorded","proposed"]), sev:sv,
+        gaps:ng, sig:rnd()<0.18, soc:t.soc, age:ageM+" mo", ageM, band:lab, tpl:t,
+        factors:[pick(FACTORS)[0], pick(FACTORS)[0]], gapTypes:ng?[pick(GAPS)[0]]:[],
+        liab:rnd()<0.7?[pick(LIABILITY)[0]]:[], quarter:pick(QUARTERS)});
+    }
+  });
+})();
+/* ---- KPI drill-through: each headline resolves to the data behind it ---- */
+const KPI_IND=[["Diagnosis — missed or delayed",9.8],["Abnormal result follow-up",5.4],["Surgical / procedural",4.1],
+["Monitoring and failure to rescue",3.6],["Medication management",2.2],["Obstetrical management",2.0],
+["Transfer and handoff",0.9],["Consent and documentation",0.6]];
+const KPI_ALAE=[["Diagnosis — missed or delayed",4.2],["Abnormal result follow-up",2.3],["Surgical / procedural",1.9],
+["Monitoring and failure to rescue",1.5],["Medication management",0.9],["Obstetrical management",0.8],
+["Transfer and handoff",0.6],["Consent and documentation",0.4]];
+const KPI_CLOSE=[["Under 12 mo",31],["12–24 mo",78],["25–36 mo",94],["37–48 mo",41],["49+ mo",21]];
+const KPI_GRADE=[["Supported — cause asserted",412],["Recorded — visible, not yet supported",486],["Proposed — needs further material",242]];
+
+function kpiTable(head,rows){return `<div class="tscroll"><table><thead><tr>${
+  head.map(h=>`<th class="${h[0]==='#'?'r':''}">${esc(h.replace(/^#/,''))}</th>`).join('')
+}</tr></thead><tbody>${rows}</tbody></table></div>`;}
+
+function kpiBody(i){
+  if(i===0){ const tot=MEMBERS.reduce((a,m)=>a+m.matters,0);
+    return `<p class="note" style="margin:0 0 12px">Every matter CHART has provided, converted and coded. Member counts sum to ${tot}.</p>`
+    + kpiTable(['Member','#Converted','#Open','#Closed'], MEMBERS.map(m=>`<tr><td>${esc(m.m)}</td>
+      <td class="r num">${m.matters}</td><td class="r num">${m.open}</td><td class="r num">${m.matters-m.open}</td></tr>`).join('')
+      + `<tr style="border-top:2px solid var(--line)"><td><b>CHART-wide</b></td><td class="r num"><b>${tot}</b></td>
+        <td class="r num"><b>47</b></td><td class="r num"><b>265</b></td></tr>`);
+  }
+  if(i===1){
+    return `<h4 style="margin:0 0 8px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">By evidentiary grade</h4>`
+    + kpiTable(['Grade','#Findings','#Share'], KPI_GRADE.map(g=>`<tr><td>${esc(g[0])}</td><td class="r num">${g[1]}</td>
+        <td class="r num">${Math.round(g[1]/1140*100)}%</td></tr>`).join(''))
+    + `<h4 style="margin:16px 0 8px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">By clinical category</h4>`
+    + kpiTable(['Category','#Findings'], CATS.map(c=>`<tr><td>${esc(c[0])}</td><td class="r num">${c[1]}</td></tr>`).join('')
+        + `<tr><td style="color:var(--muted)">Other categories</td><td class="r num">50</td></tr>`);
+  }
+  if(i===2){ const DQ=[14,12,11,9,8,7];
+    const q=OPEN.slice(0,23).map((m,k)=>({...m,days:k<6?DQ[k]:1+((k*3)%5)}));
+    return `<p class="note" style="margin:0 0 12px">Findings on open claims are protected on creation and must be dispositioned by a named reviewer. Target is 10 business days.</p>`
+    + kpiTable(['Matter','Category','Grade','#Days in queue'], q.sort((a,b)=>b.days-a.days).map(m=>`
+        <tr class="clickable" data-open="${m.id}" tabindex="0"><td><span class="mono">${m.id}</span><br>
+        <span style="color:var(--muted);font-size:11px">Member ${m.member}</span></td>
+        <td style="color:var(--ink-2)">${esc(m.cat)}</td><td>${gradeChip(m.grade)}</td>
+        <td class="r num" style="${m.days>10?'color:var(--critical-ink);font-weight:600':''}">${m.days}</td></tr>`).join(''));
+  }
+  if(i===3||i===4){ const src=i===3?KPI_IND:KPI_ALAE, tot=i===3?28.6:12.6, other=i===3?'ALAE':'indemnity';
+    return `<p class="note" style="margin:0 0 12px">Incurred means paid to date plus remaining case reserves. Shown separately from ${other}, because the two behave differently.</p>`
+    + kpiTable(['Category','#$M','#Share'], src.map(r=>`<tr><td>${esc(r[0])}</td><td class="r num">${r[1].toFixed(1)}</td>
+        <td class="r num">${Math.round(r[1]/tot*100)}%</td></tr>`).join('')
+      + `<tr style="border-top:2px solid var(--line)"><td><b>Total</b></td><td class="r num"><b>${tot.toFixed(1)}</b></td><td class="r num"><b>100%</b></td></tr>`)
+    + (i===4?`<p class="note">ALAE is 31% of total incurred. A share of matters close with no indemnity and substantial ALAE — defended successfully, but only after expert review and litigation. Earlier clarity on defensibility shows up here first.</p>`:'');
+  }
+  return `<p class="note" style="margin:0 0 12px">Time from report to closure across the 265 closed matters. Median 26 months.</p>`
+    + kpiTable(['Band','#Matters','#Share'], KPI_CLOSE.map(r=>`<tr><td>${esc(r[0])}</td><td class="r num">${r[1]}</td>
+        <td class="r num">${Math.round(r[1]/265*100)}%</td></tr>`).join(''))
+    + `<p class="note">Report-to-close is one of two lag measures in standard practice; occurrence-to-report is the other and needs incident dates CHART has not yet provided.</p>`;
+}
+
+function openKpi(i){
+  const k=KPI[i];
+  drawer.innerHTML=`
+    <div class="dhead"><div>
+      <div style="font-size:11.5px;color:var(--muted);margin-bottom:4px">Headline measure</div>
+      <h3>${esc(k.lab)}</h3></div>
+      <button class="x" id="dclose" aria-label="Close">&times;</button></div>
+    <div class="dsec" style="padding-bottom:6px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <span style="font-size:32px;font-weight:600;letter-spacing:-.02em" class="num">${esc(k.val)}${k.sub?`<span style="font-size:17px;color:var(--ink-2)">${esc(k.sub)}</span>`:''}</span>
+        <span style="font-size:12.5px;color:var(--muted)">${esc(k.d)}</span></div>
+    </div>
+    <div class="dsec" style="border-bottom:0">${kpiBody(i)}</div>`;
+  drawer.hidden=false; scrim.hidden=false;
+  requestAnimationFrame(()=>{drawer.classList.add('on');scrim.classList.add('on');});
+  $('#dclose').focus(); $('#dclose').addEventListener('click',closeDrawer);
+}
+
+const SEVBAND=["Emotional only","Emotional only","Temporary insignificant","Temporary minor","Temporary major",
+"Permanent minor","Permanent significant","Permanent major","Permanent major","Death"];
+const sevBandOf=v=>SEVBAND[Math.min(9,Math.max(0,v))];
+
+/* ---- generic chart drill-through ---- */
+function mattersTable(rows){
+  if(!rows.length) return `<p class="note">No open matters carry this attribute in the current period.</p>`;
+  return `<div class="tscroll"><table>
+    <thead><tr><th>Matter</th><th>Service</th><th>Category</th><th>Grade</th><th class="r">Age</th><th class="r">Severity</th></tr></thead>
+    <tbody>${rows.map(m=>`<tr class="clickable" data-open="${m.id}" tabindex="0">
+      <td><span class="mono">${m.id}</span><br><span style="color:var(--muted);font-size:11px">Member ${m.member}${m.sig?' \u00b7 <span style="color:var(--critical-ink)">escalation</span>':''}</span></td>
+      <td>${esc(m.service)}</td><td style="color:var(--ink-2)">${esc(m.cat)}</td>
+      <td>${gradeChip(m.grade)}</td><td class="r num">${esc(m.age)}</td>
+      <td class="r"><span class="sev"><span class="sevbar"><i style="width:${m.sev*10}%;background:var(${SEVCOL(m.sev)})"></i></span><span class="num">${m.sev}</span></span></td>
+    </tr>`).join('')}</tbody></table></div>`;
+}
+function drillDrawer(kicker,title,statLine,body){
+  drawer.innerHTML=`
+    <div class="dhead"><div>
+      <div style="font-size:11.5px;color:var(--muted);margin-bottom:4px">${esc(kicker)}</div>
+      <h3>${esc(title)}</h3></div>
+      <button class="x" id="dclose" aria-label="Close">&times;</button></div>
+    <div class="dsec" style="border-bottom:0">${statLine}${body}</div>`;
+  drawer.hidden=false; scrim.hidden=false;
+  requestAnimationFrame(()=>{drawer.classList.add('on');scrim.classList.add('on');});
+  $('#dclose').focus(); $('#dclose').addEventListener('click',closeDrawer);
+}
+function stat(total,unit,shown){
+  return `<div class="bt"><b>${total}</b> ${esc(unit)}${shown!=null?` &nbsp;\u00b7&nbsp; showing <b>${shown}</b> open matters`:''}</div>`;
+}
+function drillBy(kicker,title,total,unit,filter){
+  const rows=OPEN.filter(filter);
+  drillDrawer(kicker,title,stat(total,unit,rows.length),
+    mattersTable(rows)+`<p class="note">Portfolio figures cover all 312 converted matters over 24 months. The list above is the open matters carrying this attribute — select any one for its finding, source citation and chronology.</p>`);
+}
+
+function openBand(lab){
+  const rows=OPEN.filter(m=>m.band===lab);
+  const sup=rows.filter(m=>m.grade==='supported').length, gp=rows.filter(m=>m.gaps>0).length;
+  drawer.innerHTML=`
+    <div class="dhead"><div>
+      <div style="font-size:11.5px;color:var(--muted);margin-bottom:4px">Open matters \u00b7 age band</div>
+      <h3>${esc(lab)} since report</h3></div>
+      <button class="x" id="dclose" aria-label="Close">&times;</button></div>
+    <div class="dsec">
+      <div class="bt"><b>${rows.length}</b> open matters &nbsp;\u00b7&nbsp; <b>${sup}</b> with a supported finding &nbsp;\u00b7&nbsp; <b>${gp}</b> with information gaps</div>
+      <div class="tscroll"><table>
+        <thead><tr><th>Matter</th><th>Service</th><th>Category</th><th>Grade</th><th class="r">Age</th><th class="r">Severity</th></tr></thead>
+        <tbody>${rows.map(m=>`<tr class="clickable" data-open="${m.id}" tabindex="0">
+          <td><span class="mono">${m.id}</span><br><span style="color:var(--muted);font-size:11px">Member ${m.member}${m.sig?' \u00b7 <span style="color:var(--critical-ink)">escalation</span>':''}</span></td>
+          <td>${esc(m.service)}</td><td style="color:var(--ink-2)">${esc(m.cat)}</td>
+          <td>${gradeChip(m.grade)}</td><td class="r num">${esc(m.age)}</td>
+          <td class="r"><span class="sev"><span class="sevbar"><i style="width:${m.sev*10}%;background:var(${SEVCOL(m.sev)})"></i></span><span class="num">${m.sev}</span></span></td>
+        </tr>`).join('')}</tbody></table></div>
+      <p class="note">Select any matter to open its finding, source citation and chronology.</p>
+    </div>`;
+  drawer.hidden=false; scrim.hidden=false;
+  requestAnimationFrame(()=>{drawer.classList.add('on');scrim.classList.add('on');});
+  $('#dclose').focus(); $('#dclose').addEventListener('click',closeDrawer);
+}
+
 const drawer=$('#drawer'), scrim=$('#scrim');
 function openFinding(id){
-  const f=FINDINGS.find(x=>x.id===id); if(!f) return;
+  let f=FINDINGS.find(x=>x.id===id);
+  if(!f){ const m=OPEN.find(x=>x.id===id); if(m) f={...m.tpl, id:m.id, member:m.member, age:m.age,
+    grade:m.grade, sev:m.sev, gaps:m.gaps, sig:m.sig, service:m.service, cat:m.cat}; }
+  if(!f) return;
   const socLine = f.soc==='expert' ? 'Concern asserted in a retained expert report already in the file.'
     : f.soc==='policy' ? "Assessed against the member's own written policy, produced in the file."
     : 'No standard-of-care concern identified.';
@@ -910,7 +1168,7 @@ function openFinding(id){
         <h3>${esc(f.title)}</h3></div>
       <button class="x" id="dclose" aria-label="Close">&times;</button>
     </div>
-    <div class="dsec"><h4>What the record shows</h4>
+    <div class="dsec"><h4>What the record shows <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-weight:400">· Objective 1A.7</span></h4>
       <div class="quote">${esc(f.text)}</div>
       <div class="cite"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2h5l3 3v9H4z" stroke="currentColor" stroke-width="1.3"/><path d="M9 2v3h3" stroke="currentColor" stroke-width="1.3"/></svg>
         <span>${esc(f.src)}</span><button class="rowbtn" style="font-size:11.5px">Open source document</button></div></div>
@@ -945,10 +1203,11 @@ function closeDrawer(){drawer.classList.remove('on');scrim.classList.remove('on'
 scrim.addEventListener('click',closeDrawer);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!drawer.hidden)closeDrawer();});
 document.addEventListener('click',e=>{
-  const tr=e.target.closest('tr.clickable'); if(tr){openFinding(tr.dataset.id);return;}
+  const kp=e.target.closest('.kpi[data-kpi]'); if(kp){openKpi(+kp.dataset.kpi);return;}
+  const tr=e.target.closest('tr.clickable'); if(tr){openFinding(tr.dataset.id||tr.dataset.open);return;}
   const al=e.target.closest('[data-open]'); if(al)openFinding(al.dataset.open);});
 document.addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&e.target.closest){const tr=e.target.closest('tr.clickable'); if(tr)openFinding(tr.dataset.id);}});
+  if(e.key==='Enter'&&e.target.closest){const tr=e.target.closest('tr.clickable'); if(tr)openFinding(tr.dataset.id||tr.dataset.open);}});
 
 /* ============ release staging ============ */
 const STAGE_LABEL={mvp:'First release', p1:'Phase 1', p1a:'Phase 1A', road:'Roadmap'};
@@ -1001,8 +1260,50 @@ document.querySelectorAll('.seg button').forEach(b=>{
   });
 });
 
+/* ---- per-chart drill handlers ---- */
+function openQuarter(i){
+  const q=QUARTERS[i], tot=TREND.reduce((a,se)=>a+se.v[i],0);
+  const cats=TREND.map(se=>se.name);
+  const rows=OPEN.filter(m=>cats.some(c=>m.cat.startsWith(c.split(' —')[0].split(' /')[0])));
+  drillDrawer('Quarter · three leading categories', q,
+    `<div class="bt"><b>${tot}</b> findings this quarter</div>`,
+    `<div class="tscroll"><table><thead><tr><th>Category</th><th class="r">Findings</th><th class="r">vs prior</th></tr></thead><tbody>
+      ${TREND.map(se=>{const d=i?se.v[i]-se.v[i-1]:0;
+        return `<tr><td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${cssv(se.color)};margin-right:7px"></span>${esc(se.name)}</td>
+        <td class="r num">${se.v[i]}</td><td class="r num" style="color:${d>0?'var(--critical-ink)':d<0?'var(--good-ink)':'var(--muted)'}">${i?(d>0?'+':'')+d:'—'}</td></tr>`;}).join('')}
+      </tbody></table></div>
+      <h4 style="margin:16px 0 8px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Open matters in these categories</h4>`
+    + mattersTable(rows)
+    + `<p class="note">${i<4?'Within the baseline period. Comparison begins Q1 2026.':'Comparison period — measured against the baseline established in the first four quarters.'}</p>`);
+}
+
+function openMember(name,rate,matters){
+  const letter=name.replace('Member Hospital ','');
+  const rows=OPEN.filter(m=>m.member===letter);
+  const rec=MEMBERS.find(m=>m.m===name)||{};
+  drillDrawer('Member hospital', name,
+    `<div class="bt"><b>${rate}</b> findings per 100 matters &nbsp;·&nbsp; <b>${matters}</b> converted &nbsp;·&nbsp; <b>${rec.open||rows.length}</b> open</div>`,
+    `<p class="note" style="margin:0 0 12px">${(+rate)>18.4?'Above':'Below'} the CHART mean of 18.4. Refocus activity: ${esc(rec.refocus&&rec.refocus!=='—'?rec.refocus:'none recorded')}.</p>`
+    + mattersTable(rows)
+    + `<p class="note">Rates are normalized per 100 converted matters because raw counts track member size.</p>`);
+}
+
+function openInitiative(nm){
+  const it=IMPACT.find(x=>x.name===nm); if(!it) return;
+  const d=(it.after-it.before).toFixed(1), better=it.after<it.before;
+  const letter=(it.member.match(/Member ([A-H])/)||[])[1];
+  const rows=letter?OPEN.filter(m=>m.member===letter):OPEN.slice(0,8);
+  drillDrawer('Mitigation initiative', nm,
+    `<div class="bt"><b>${it.before}</b> before &nbsp;→&nbsp; <b>${it.after}</b> since &nbsp;·&nbsp;
+      <span style="color:${better?'var(--good-ink)':'var(--serious-ink)'};font-weight:600">${d} per 100</span></div>`,
+    `<p class="note" style="margin:0 0 12px">${esc(it.member)} · ${esc(it.q)}. ${better?'Moving in the intended direction.':'No clear movement yet — too early, or the intervention is not reaching the failure point.'}
+     Attribution to the initiative alone is not established; this is the measure CHART asked for, not proof of cause.</p>`
+    + mattersTable(rows)
+    + `<p class="note">Objective 1.7 asks whether mitigation appears to be having an impact. What counts as evidence of that is an open decision for CHART.</p>`);
+}
+
 /* ============ tabs ============ */
-const PANELS=['overview','clinical','developing','claims','mitigation','members','reports'];
+const PANELS=['overview','clinical','developing','claims','mitigation','members','reports','scopemethod'];
 document.querySelectorAll('nav.tabs button').forEach(b=>{
   b.addEventListener('click',()=>{
     document.querySelectorAll('nav.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
@@ -1013,14 +1314,20 @@ document.querySelectorAll('nav.tabs button').forEach(b=>{
 
 /* ============ render ============ */
 function renderAll(){
-  hbar('#c-cat',CATS,{aria:'Findings by clinical category'});
-  hbar('#c-cat-mini',CATS.slice(0,5),{labW:200,aria:'Leading clinical categories'});
-  hbar('#c-factor',FACTORS,{labW:190,unit:'%',aria:'Contributing factors'});
-  hbar('#c-service',SERVICES,{labW:170,aria:'Findings by responsible service'});
-  hbar('#c-gaps',GAPS,{labW:190,aria:'Information gaps'});
-  hbar('#c-liab',LIABILITY,{labW:210,aria:'Liability factors across open matters'});
-  vbar('#c-sev',SEVERITY,{aria:'Clinical severity distribution'});
-  vbar('#c-age',AGE,{aria:'Open matter age'});
+  const byCat=(l,v)=>drillBy('Clinical category',l,v,'findings across the portfolio',m=>m.cat===l);
+  hbar('#c-cat',CATS,{aria:'Findings by clinical category',onBar:byCat});
+  hbar('#c-cat-mini',CATS.slice(0,5),{labW:200,aria:'Leading clinical categories',onBar:byCat});
+  hbar('#c-factor',FACTORS,{labW:190,unit:'%',aria:'Contributing factors',
+    onBar:(l,v)=>drillBy('Contributing factor',l,v,'of findings carry this factor',m=>m.factors.includes(l))});
+  hbar('#c-service',SERVICES,{labW:170,aria:'Findings by responsible service',
+    onBar:(l,v)=>drillBy('Responsible service',l,v,'findings across the portfolio',m=>m.service===l)});
+  hbar('#c-gaps',GAPS,{labW:190,aria:'Information gaps',
+    onBar:(l,v)=>drillBy('Information gap',l,v,'open matters affected',m=>m.gapTypes.includes(l))});
+  hbar('#c-liab',LIABILITY,{labW:210,aria:'Liability factors across open matters',
+    onBar:(l,v)=>drillBy('Liability factor',l,v,'open matters carry this factor',m=>m.liab.includes(l))});
+  vbar('#c-sev',SEVERITY,{aria:'Clinical severity distribution',
+    onBar:l=>drillBy('Clinical severity of injury',l,SEVERITY.find(r=>r[0]===l)[1],'matters at this severity',m=>sevBandOf(m.sev)===l)});
+  vbar('#c-age',AGE,{aria:'Open matter age',onBar:openBand});
   lines('#c-trend',QUARTERS,TREND);
   lolli('#c-members',MEMBERS);
   impact('#c-impact',IMPACT);
@@ -1073,6 +1380,17 @@ if(PANELS.includes(h))document.querySelector(`nav.tabs button[data-tab="${h}"]`)
   });
 })();
 </script>
+
+
+
+
+
+
+
+
+
+
+
 
 
 </body>

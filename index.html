@@ -310,7 +310,7 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
       <div class="seg" role="group" aria-label="Release stage filter">
         <button data-f="all" aria-pressed="true">Full capability</button>
         <button data-f="p1" aria-pressed="false">Phase 1</button>
-        <button data-f="mvp" aria-pressed="false">First release</button>
+        <button data-f="mvp" aria-pressed="false">MVP</button>
       </div>
       <span class="sbn" id="stagecount"></span>
     </div>
@@ -528,7 +528,7 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
   <section id="reports" hidden>
     <div class="card" data-stage="mvp">
       <header><h2>Standard reports and deliverables</h2><span class="hint">Objective 1.9 &amp; 1A.8</span></header>
-      <p class="lead">CHART's objectives leave the specific content, format, frequency and level of detail to be defined as the project develops. This is the proposed first set — the two marked <b>MVP</b> are built in the first release; the rest are the catalogue to prioritize from.</p>
+      <p class="lead">CHART's objectives leave the specific content, format, frequency and level of detail to be defined as the project develops. This is the proposed first set — the two marked <b>MVP</b> ship in the MVP; the rest are the catalogue to prioritize from.</p>
       <div class="body tscroll"><table id="t-reports"></table></div>
     </div>
     <div class="grid g-2">
@@ -573,12 +573,12 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
 
     <div class="grid g-32">
       <div class="card" data-stage="mvp">
-        <header><h2>How success is measured</h2><span class="hint">Summary objective S.3 · proof of concept POC.1, POC.2, POC.5</span></header>
-        <p class="lead">CHART's test is whether the system goes beyond summaries and timelines to surface what would otherwise need significant manual review.</p>
+        <header><h2>How the MVP is accepted</h2><span class="hint">Summary objective S.3 · acceptance criteria</span></header>
+        <p class="lead">This engagement delivers a working MVP, not a demonstration. CHART's test is whether the system goes beyond summaries and timelines to surface what would otherwise need significant manual review — and whether it does so reliably enough to be used in the daily work.</p>
         <div class="body" id="method"></div>
       </div>
       <div class="card" data-stage="mvp">
-        <header><h2>Model governance</h2><span class="hint">Summary objective S.3 · proof of concept POC.1</span></header>
+        <header><h2>Model governance</h2><span class="hint">Summary objective S.3 · carried into production</span></header>
         <p class="lead">What counsel and the PSO will be asked about the system itself, not its output. Recorded per release and carried into the audit trail.</p>
         <div class="body tscroll"><table id="t-gov"></table></div>
         <p class="note" style="padding:0 15px 14px">The platform records an <b>evidentiary grade</b> rather than a numeric confidence score. A percentage attached to a clinical finding invites a question in deposition that nothing in the system can answer; <i>supported / recorded / proposed</i> states what the record contains, which can be shown.</p>
@@ -607,7 +607,7 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
 
 <script>
 /* ============ build stamp — single source of truth (set by stamp.py) ============ */
-const BUILD={v:"0.9", date:"27 Sep 2026", time:"21:36", DATE:"27 SEP 2026"};
+const BUILD={v:"1.0", date:"27 Sep 2026", time:"21:45", DATE:"27 SEP 2026"};
 document.getElementById('asof').insertAdjacentHTML('beforeend',
   `Prototype updated ${BUILD.date}, ${BUILD.time}`);
 document.getElementById('buildbadge').textContent=`BUILD ${BUILD.v} \u00b7 ${BUILD.DATE}`;
@@ -859,9 +859,9 @@ const CROSS=[
 ];
 
 const GOV=[
- ["Version","Analysis release 0.7 · coding schema v1.2","Every finding stores the release that produced it. A finding is reproducible against the release that made it, not only against the current one."],
+ ["Version","MVP release 1.0 · coding schema v1.2","Every finding stores the release that produced it. A finding is reproducible against the release that made it, not only against the current one."],
  ["What it was built on","CHART closed matters only","Open matters are analysed, never used to fit or tune. Removes the objection that the system learned from matters still in litigation."],
- ["How it was evaluated","Blind held-back set of closed matters (POC.1)","Compared against the expert findings and committee determinations already in those files — not against the system's own prior output."],
+ ["How it was evaluated","Blind held-back set of closed matters, re-run each release","Compared against the expert findings and committee determinations already in those files — not against the system's own prior output."],
  ["What is reported","Findings surfaced, findings missed, findings not accepted","Recall matters more than precision here. The missed set is reported to CHART, not only the hit set (summary objective S.3)."],
  ["Change control","Re-evaluated against the blind set before any release","A change that improves one category and degrades another is visible before it ships, not after."],
  ["Human step","A named reviewer dispositions every finding","No output is operative until a person acts on it (parameter P.5). The model's role ends at surfacing."],
@@ -920,12 +920,12 @@ const NOACT=["No determination of negligence or fault",
  "No autonomous action — the system surfaces, a professional decides",
  "No clinical decision support to treating clinicians"];
 const METHOD=[
- ["Define by example, not definition","CHART professionals mark up an agreed set of closed matters with what they would have wanted flagged. That set becomes the standard.","S.3"],
- ["Hold a blind evaluation set","A further set is held back unseen and compared against the expert findings and committee determinations already in those files.","POC.1"],
- ["Agree the criteria before build","The capability list and the evaluation method are written and signed before development begins.","POC.2"],
+ ["Define by example, not definition","CHART professionals mark up an agreed set of closed matters with what they would have wanted flagged. That set becomes the acceptance standard.","S.3"],
+ ["Agree the criteria before build","The capability list and the acceptance method are written and signed before development begins.","Acceptance"],
+ ["Hold a blind evaluation set","A further set is held back unseen and measured against the expert findings and committee determinations already in those files.","Acceptance"],
  ["Report what was missed","Results include the findings the system did not surface, not only those it did.","S.3"],
- ["CHART decides at the gate","Results, value, scope and cost are weighed before anything further is committed.","POC.5"],
- ["No commitment implied","The first piece of work is not a commitment to a full implementation or a longer-term agreement.","POC.6"]];
+ ["Built to run, not to demonstrate","The MVP carries the architecture, testing, security, release and support processes required to operate reliably at scale — not a demonstration that would have to be rebuilt to go live.","MVP"],
+ ["CHART accepts at the release gate","Measured results, scope and cost are weighed against the agreed criteria before the MVP is accepted into use.","Acceptance"]];
 const PHASE2=[
  ["2.1","Disclosed patient safety work product","Extend the clinical analysis to member hospital event-reporting systems."],
  ["2.2","Analysis through a PSES","Deliberations conducted under the auspices of the CHART Institute PSO."],
@@ -1531,7 +1531,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.closest){const tr=e.target.closest('tr.clickable'); if(tr)openFinding(tr.dataset.id||tr.dataset.open);}});
 
 /* ============ release staging ============ */
-const STAGE_LABEL={mvp:'First release', p1:'Phase 1', p1a:'Phase 1A', road:'Roadmap'};
+const STAGE_LABEL={mvp:'MVP', p1:'Phase 1', p1a:'Phase 1A', road:'Roadmap'};
 const STAGE_IN={ all:['mvp','p1','p1a','road'], p1:['mvp','p1'], mvp:['mvp'] };
 let STAGE_FILTER='all';
 
@@ -1562,7 +1562,7 @@ function applyStage(){
     let ph=sec.querySelector('.emptystate');
     if(!vis){
       if(!ph){ ph=document.createElement('div'); ph.className='emptystate';
-        ph.innerHTML='<b>Nothing in this view is in the selected release.</b>Switch to Full capability to see what this view will hold.';
+        ph.innerHTML='<b>Nothing in this view ships in the selected release.</b>Switch to Full capability to see what this view will hold.';
         sec.appendChild(ph); }
       ph.hidden=false;
     } else if(ph) ph.hidden=true;
@@ -1731,15 +1731,16 @@ if(PANELS.includes(h) && ENVS[ENV].tabs.includes(h))document.querySelector(`nav.
 <div id="welcome" hidden>
   <div class="wc" role="dialog" aria-modal="true" aria-labelledby="wtitle">
     <h2 id="wtitle">CHART Risk Intelligence</h2>
-    <p class="k">Working prototype · MAPS Technologies</p>
-    <div class="sy"><div><b>Every number here is invented.</b> This is a design prototype built to agree what the platform should show. No CHART claim information has been processed.</div></div>
+    <p class="k">MVP design prototype · MAPS Technologies</p>
+    <div class="sy"><div><b>Every number here is invented.</b> This is a design prototype for a working MVP — built to agree what the platform should show before it is built. No CHART claim information has been processed.</div></div>
     <p>It is built against CHART&rsquo;s own Statement of Work objectives — each panel is labelled with the objective it serves, so you can check coverage against your document.</p>
     <ul>
-      <li><b>Seven tabs</b> across the top, from the daily working view through to reports.</li>
+      <li><b>Two working phases</b>, switched at the top: Risk Management &amp; Patient Safety, and Claims &amp; Litigation. Each has its own views and its own protections.</li>
       <li><b>Click any row</b> in a table to see the finding, the record it came from, and the page it was cited to.</li>
-      <li><b>Use the Show control</b> to switch between the full capability and what the first release would actually deliver.</li>
+      <li><b>Open the same matter in both phases</b> — the clinical analysis is present in one and withheld in the other.</li>
+      <li><b>Use the Show control</b> to switch between the full capability and what the MVP itself delivers.</li>
     </ul>
-    <button class="go" id="wgo">Explore the prototype</button>
+    <button class="go" id="wgo">Open the prototype</button>
   </div>
 </div>
 <script>
@@ -1752,6 +1753,7 @@ if(PANELS.includes(h) && ENVS[ENV].tabs.includes(h))document.querySelector(`nav.
   });
 })();
 </script>
+
 
 
 

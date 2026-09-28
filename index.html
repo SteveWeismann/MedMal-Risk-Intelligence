@@ -550,7 +550,6 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
     <div class="card" data-stage="mvp">
       <header><h2>Separation of the two environments</h2><span class="hint">Parameter P.4 · CHART review comment, 27 Sep</span></header>
       <p class="lead">Risk management and claims evaluation run as two distinct working phases in two separate environments. This is what may cross between them, and what may not.</p>
-      <p class="lead" style="margin-top:8px"><b>A word used two ways.</b> CHART's objectives use <i>Phase 1, Phase 1A, Phase 2</i> for release sequencing — what gets built when. CHART's 27 September comment uses <i>phase</i> for something different: the two working phases, risk management and claims evaluation. The switcher at the top of this page is the second sense. The <i>Show</i> control is the first. The chips on each card (First release, Phase 1, Phase 1A) are sequencing only and say nothing about which environment a card belongs to.</p>
       <div class="body tscroll"><table id="t-cross"></table></div>
       <p class="note" style="padding:0 15px 14px">CHART has confirmed that an individual may hold both roles. The separation is therefore of the <b>information</b>, not of the people: a dual-role user sees each environment exactly as defined above, nothing protected is written into the claims record, and every switch is recorded on a single audit trail.</p>
     </div>
@@ -608,7 +607,7 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
 
 <script>
 /* ============ build stamp — single source of truth (set by stamp.py) ============ */
-const BUILD={v:"0.8", date:"27 Sep 2026", time:"21:17", DATE:"27 SEP 2026"};
+const BUILD={v:"0.9", date:"27 Sep 2026", time:"21:36", DATE:"27 SEP 2026"};
 document.getElementById('asof').insertAdjacentHTML('beforeend',
   `Prototype updated ${BUILD.date}, ${BUILD.time}`);
 document.getElementById('buildbadge').textContent=`BUILD ${BUILD.v} \u00b7 ${BUILD.DATE}`;
@@ -1570,9 +1569,7 @@ function applyStage(){
     const tab=document.querySelector(`nav.tabs button[data-tab="${p}"]`);
     if(tab) tab.classList.toggle('empty', !vis);
   });
-  $('#stagecount').textContent = STAGE_FILTER==='all'
-    ? `${total} views · everything CHART's objectives ask for`
-    : `${shown} of ${total} views`;
+  $('#stagecount').textContent = STAGE_FILTER==='all' ? '' : `${shown} of ${total} views`;
 }
 document.querySelectorAll('.seg button').forEach(b=>{
   b.addEventListener('click',()=>{
@@ -1755,6 +1752,7 @@ if(PANELS.includes(h) && ENVS[ENV].tabs.includes(h))document.querySelector(`nav.
   });
 })();
 </script>
+
 
 
 

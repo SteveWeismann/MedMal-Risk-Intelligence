@@ -74,6 +74,9 @@ body[data-env="claims"]{--accent:#4a3aa7; --accent-ink:#ffffff; --accent-soft:#e
 .envseg button[aria-pressed="true"] .sw{opacity:1}
 .envseg button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
 .envnote{font-size:11.5px; color:var(--muted)}
+.envseg button[disabled]{opacity:.42; cursor:not-allowed}
+.envseg button[disabled]:hover{background:none}
+.envseg button[disabled]::after{content:" \00a0\1F512"; font-size:10px}
 .envbanner{display:flex; gap:10px; align-items:flex-start; border-radius:var(--r); padding:11px 13px;
   margin-top:16px; font-size:12.5px; background:var(--accent-soft); border:1px solid var(--accent-line); color:var(--ink-2)}
 .envbanner b{color:var(--ink)}
@@ -281,7 +284,12 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
         <button data-env="risk" aria-pressed="true"><span class="sw"></span>Risk Management &amp; Patient Safety</button>
         <button data-env="claims" aria-pressed="false"><span class="sw"></span>Claims &amp; Litigation</button>
       </div>
-      <span class="envnote" id="envnote"></span>
+      <select class="ctl" id="rolesel" aria-label="Provisioned role">
+      <option value="both">Provisioned: both roles</option>
+      <option value="risk">Provisioned: risk management only</option>
+      <option value="claims">Provisioned: claims only</option>
+    </select>
+    <span class="envnote" id="envnote"></span>
     <span class="chip" id="envrec" hidden style="margin-left:auto">Switch recorded to the audit trail</span>
     </div>
     <div class="topbar">
@@ -570,6 +578,15 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
         <p class="lead">CHART's test is whether the system goes beyond summaries and timelines to surface what would otherwise need significant manual review.</p>
         <div class="body" id="method"></div>
       </div>
+      <div class="card" data-stage="mvp">
+        <header><h2>Model governance</h2><span class="hint">Summary objective S.3 · proof of concept POC.1</span></header>
+        <p class="lead">What counsel and the PSO will be asked about the system itself, not its output. Recorded per release and carried into the audit trail.</p>
+        <div class="body tscroll"><table id="t-gov"></table></div>
+        <p class="note" style="padding:0 15px 14px">The platform records an <b>evidentiary grade</b> rather than a numeric confidence score. A percentage attached to a clinical finding invites a question in deposition that nothing in the system can answer; <i>supported / recorded / proposed</i> states what the record contains, which can be shown.</p>
+      </div>
+    </div>
+
+    <div class="grid g-32">
       <div class="card" data-stage="road">
         <header><h2>Phase 2 — carried forward</h2><span class="hint">Objectives 2.1–2.5 · not in this engagement</span></header>
         <p class="lead">Event reporting and the PSES depend on member participation and a legal structure not yet in place. Deferred deliberately; the Phase 1 data model does not foreclose any of it.</p>
@@ -591,7 +608,7 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
 
 <script>
 /* ============ build stamp — single source of truth (set by stamp.py) ============ */
-const BUILD={v:"0.7", date:"27 Sep 2026", time:"20:54", DATE:"27 SEP 2026"};
+const BUILD={v:"0.8", date:"27 Sep 2026", time:"21:17", DATE:"27 SEP 2026"};
 document.getElementById('asof').insertAdjacentHTML('beforeend',
   `Prototype updated ${BUILD.date}, ${BUILD.time}`);
 document.getElementById('buildbadge').textContent=`BUILD ${BUILD.v} \u00b7 ${BUILD.DATE}`;
@@ -842,6 +859,16 @@ const CROSS=[
   "CHART confirmed 27 Sep. What is segregated is the information, not the people: a dual-role user sees each environment as it is defined above, and every crossing is recorded."]
 ];
 
+const GOV=[
+ ["Version","Analysis release 0.7 · coding schema v1.2","Every finding stores the release that produced it. A finding is reproducible against the release that made it, not only against the current one."],
+ ["What it was built on","CHART closed matters only","Open matters are analysed, never used to fit or tune. Removes the objection that the system learned from matters still in litigation."],
+ ["How it was evaluated","Blind held-back set of closed matters (POC.1)","Compared against the expert findings and committee determinations already in those files — not against the system's own prior output."],
+ ["What is reported","Findings surfaced, findings missed, findings not accepted","Recall matters more than precision here. The missed set is reported to CHART, not only the hit set (summary objective S.3)."],
+ ["Change control","Re-evaluated against the blind set before any release","A change that improves one category and degrades another is visible before it ships, not after."],
+ ["Human step","A named reviewer dispositions every finding","No output is operative until a person acts on it (parameter P.5). The model's role ends at surfacing."],
+ ["What is not recorded","No numeric confidence, no practitioner scoring","Neither is defensible on an individual matter, and both invite reliance the system cannot support."]
+];
+
 const PROT={
  risk:{hint:"Risk Management & Patient Safety · parameter P.4",
   lead:"Clinical analysis is patient safety work. The protections here are designed so that analysing an open claim does not create a discoverable record of that analysis outside the PSO.",
@@ -851,7 +878,8 @@ const PROT={
    ["Held within the patient safety evaluation system","Findings on open matters are not written to the claims analytics environment and no copy exists there to produce."],
    ["Small-cell suppression on aggregates","Trend and member counts are suppressed below threshold so an individual protected finding cannot be inferred from an aggregate."],
    ["Negative space is shown","What was reviewed and not flagged is displayed, so a reviewer can judge the boundary of the system's attention rather than assume it (parameter P.5)."],
-   ["Crossing recorded","Because a person may also hold the claims role, every switch out of this environment is written to the unified crossing record."]]},
+   ["Crossing recorded","Because a person may also hold the claims role, every switch out of this environment is written to the unified crossing record."],
+   ["Provisioning","__PROV__"]]},
  claims:{hint:"Claims & Litigation · parameters P.1 and P.5",
   lead:"Claim analysis is claim work product, prepared in the management of a specific matter. The protections here run the other way: they keep claim strategy out of the aggregate and keep the clinical analysis out of the claim file.",
   rows:[
@@ -860,8 +888,13 @@ const PROT={
    ["No system-generated value on an open matter","The platform surfaces severity-associated factors and comparables. It does not produce a settlement figure or range (objective 1A.2)."],
    ["No determination, no autonomous action","No finding of negligence, fault or causation. Every output is a factor for a claims professional to weigh (parameter P.5)."],
    ["CHART's claims system stays the system of record","Nothing here writes back to it. No reserves, payments, counsel assignment or claim status changes (parameter P.1)."],
-   ["Crossing recorded","Entering this environment from patient safety is written to the unified crossing record, with what was open at the time."]]}
+   ["Crossing recorded","Entering this environment from patient safety is written to the unified crossing record, with what was open at the time."],
+   ["Provisioning","__PROV__"]]}
 };
+const PROV={
+ both:"You are provisioned to both phases. Both are reachable, and every crossing is recorded. This is the arrangement CHART confirmed on 27 September.",
+ risk:"You are provisioned to risk management only. The claims phase is not reachable — the switch is locked, not merely hidden.",
+ claims:"You are provisioned to claims only. The patient safety phase is not reachable, so no clinical analysis of an open matter is available to you by any route."};
 
 const AUDIT=[
  ["27 Sep 14:02","R. Alvarez","Risk → Claims","CH-2411 open at switch","Clinical finding not carried across"],
@@ -1172,13 +1205,19 @@ $('#t-cross').innerHTML = `
     return `<tr><td style="font-weight:500">${c[0]}</td><td>${cell(c[1])}</td><td>${cell(c[2])}</td>
       <td style="color:var(--ink-2)">${esc(c[3])}</td></tr>`;}).join('')}</tbody>`;
 
+$('#t-gov').innerHTML = `
+  <thead><tr><th>Question</th><th>Answer</th><th>Why it is asked</th></tr></thead>
+  <tbody>${GOV.map(g=>`<tr><td style="font-weight:500">${esc(g[0])}</td>
+    <td style="color:var(--ink)">${esc(g[1])}</td>
+    <td style="color:var(--ink-2)">${esc(g[2])}</td></tr>`).join('')}</tbody>`;
+
 function renderProt(){
   const P=PROT[ENV];
   $('#prothint').textContent=P.hint;
   $('#protlead').textContent=P.lead;
   $('#t-prot').innerHTML=`<thead><tr><th>Protection</th><th>How it works here</th></tr></thead>
     <tbody>${P.rows.map(r=>`<tr><td style="font-weight:500;width:32%">${esc(r[0])}</td>
-      <td style="color:var(--ink-2)">${esc(r[1])}</td></tr>`).join('')}</tbody>`;
+      <td style="color:var(--ink-2)">${esc(r[1]==='__PROV__'?PROV[ROLE]:r[1])}</td></tr>`).join('')}</tbody>`;
 }
 function renderAudit(){ $('#t-audit').innerHTML = `
   <thead><tr><th>When</th><th>User</th><th>Environment</th><th>Matter</th><th>Carried across</th></tr></thead>
@@ -1335,6 +1374,9 @@ function openKpi(i){
   $('#dclose').focus(); $('#dclose').addEventListener('click',closeDrawer);
 }
 
+const PROV_DATES=["22 Sep 2026","22 Sep 2026","25 Sep 2026 02:10"];
+const docIdOf=id=>'DOC-'+String(id).replace(/\D/g,'')+'-07';
+
 const SEVBAND=["Emotional only","Emotional only","Temporary insignificant","Temporary minor","Temporary major",
 "Permanent minor","Permanent significant","Permanent major","Permanent major","Death"];
 const sevBandOf=v=>SEVBAND[Math.min(9,Math.max(0,v))];
@@ -1429,7 +1471,13 @@ function openFinding(id){
     <div class="dsec"><h4>What the record shows <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-weight:400">· Objective 1A.7</span></h4>
       <div class="quote">${esc(f.text)}</div>
       <div class="cite"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2h5l3 3v9H4z" stroke="currentColor" stroke-width="1.3"/><path d="M9 2v3h3" stroke="currentColor" stroke-width="1.3"/></svg>
-        <span>${esc(f.src)}</span><button class="rowbtn" style="font-size:11.5px">Open source document</button></div></div>
+        <span>${esc(f.src)}</span><button class="rowbtn" style="font-size:11.5px">Open source document</button></div>
+      <dl class="kv" style="margin-top:9px;grid-template-columns:104px 1fr;font-size:11.5px">
+        <dt>Document ID</dt><dd class="mono">${esc(docIdOf(f.id))}</dd>
+        <dt>Received</dt><dd>${esc(PROV_DATES[0])} from CHART claims system</dd>
+        <dt>Converted</dt><dd>${esc(PROV_DATES[1])} · OCR not required, native text</dd>
+        <dt>Last analysed</dt><dd>${esc(PROV_DATES[2])}</dd>
+      </dl></div>
     <div class="dsec"><h4>Chronology from the record</h4>
       <ul class="tl">${f.chron.map(c=>`<li class="${c[2]?'hit':''}"><span class="t">${esc(c[0])}</span><span class="e">${esc(c[1])}</span></li>`).join('')}</ul>
       <p class="note">Marked entries are those the finding rests on. The timeline is built from the record; the finding is what the timeline alone does not give you.</p></div>
@@ -1577,7 +1625,17 @@ function openInitiative(nm){
 }
 
 /* ============ environments ============ */
-let ENV='risk';
+let ENV='risk', ROLE='both';
+const ROLE_ENVS={both:['risk','claims'], risk:['risk'], claims:['claims']};
+function applyRole(){
+  const allow=ROLE_ENVS[ROLE];
+  document.querySelectorAll('.envseg button').forEach(b=>{
+    const ok=allow.includes(b.dataset.env);
+    b.disabled=!ok;
+    b.title=ok?'':'Not provisioned to you under the selected role';
+  });
+  if(!allow.includes(ENV)){ ENV=allow[0]; closeDrawer(); applyEnv(); }
+}
 function applyEnv(){
   const e=ENVS[ENV];
   document.body.dataset.env=ENV;
@@ -1603,12 +1661,13 @@ function applyEnv(){
     <div class="delta ${k.cls||''}">${esc(k.d)}</div></button>`).join('');
   applyStage();
 }
+$('#rolesel').addEventListener('change',e=>{ ROLE=e.target.value; applyRole(); renderProt(); });
 document.querySelectorAll('.envseg button').forEach(b=>{
-  b.addEventListener('click',()=>{ if(ENV===b.dataset.env) return;
+  b.addEventListener('click',()=>{ if(ENV===b.dataset.env||b.disabled) return;
     const from=ENV; ENV=b.dataset.env;
     const now=new Date(), hh=String(now.getHours()).padStart(2,'0'), mm=String(now.getMinutes()).padStart(2,'0');
     const open=drawer.hidden?'None open at switch':'Matter open at switch';
-    AUDIT.unshift([`Now ${hh}:${mm}`,'You (both roles)',
+    AUDIT.unshift([`Now ${hh}:${mm}`, ROLE==='both'?'You (both roles)':'You (single role)',
       (from==='risk'?'Risk \u2192 Claims':'Claims \u2192 Risk'), open,
       from==='risk'?'Clinical finding not carried across':'\u2014']);
     closeDrawer(); applyEnv(); renderAudit();
@@ -1650,6 +1709,7 @@ function renderAll(){
 }
 renderAll();
 applyEnv();
+applyRole();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',renderAll);
 const h=(location.hash||'').replace('#','');
 if(PANELS.includes(h) && ENVS[ENV].tabs.includes(h))document.querySelector(`nav.tabs button[data-tab="${h}"]`).click();
@@ -1695,6 +1755,7 @@ if(PANELS.includes(h) && ENVS[ENV].tabs.includes(h))document.querySelector(`nav.
   });
 })();
 </script>
+
 
 
 

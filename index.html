@@ -28,6 +28,10 @@
   --good-ink:#00630c; --critical-ink:#a32020; --serious-ink:#9a4a22; --warning-ink:#7a5600;
   --shadow:0 1px 2px rgba(15,23,32,.05), 0 1px 12px rgba(15,23,32,.04);
   --r:10px;
+  --stg-mvp-bg:#0d5b6b; --stg-mvp-ink:#ffffff; --stg-mvp-line:#0d5b6b;
+  --stg-p1-bg:#eef4fc; --stg-p1-ink:#2f5e9e; --stg-p1-line:#c3d6ee;
+  --stg-p1a-bg:#fdf6ea; --stg-p1a-ink:#8f6221; --stg-p1a-line:#ebd3a9;
+  --stg-road-ink:#7a8590; --stg-road-line:#cfd7de;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -40,6 +44,10 @@
     --seq:#3987e5; --seq-soft:#184f95; --seq-pale:#2a78d6;
     --good-ink:#0ca30c; --critical-ink:#e07a7a; --serious-ink:#ec835a; --warning-ink:#fab219;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 1px 12px rgba(0,0,0,.25);
+    --stg-mvp-bg:#35a9bb; --stg-mvp-ink:#04222a; --stg-mvp-line:#35a9bb;
+    --stg-p1-bg:#16263c; --stg-p1-ink:#8fb6ea; --stg-p1-line:#27405f;
+    --stg-p1a-bg:#2e2416; --stg-p1a-ink:#e0ab6a; --stg-p1a-line:#4a3a22;
+    --stg-road-ink:#7f8c99; --stg-road-line:#2b3640;
   }
 }
 :root[data-theme="dark"]{
@@ -52,6 +60,10 @@
   --seq:#3987e5; --seq-soft:#184f95; --seq-pale:#2a78d6;
   --good-ink:#0ca30c; --critical-ink:#e07a7a; --serious-ink:#ec835a; --warning-ink:#fab219;
   --shadow:0 1px 2px rgba(0,0,0,.4), 0 1px 12px rgba(0,0,0,.25);
+  --stg-mvp-bg:#35a9bb; --stg-mvp-ink:#04222a; --stg-mvp-line:#35a9bb;
+  --stg-p1-bg:#16263c; --stg-p1-ink:#8fb6ea; --stg-p1-line:#27405f;
+  --stg-p1a-bg:#2e2416; --stg-p1a-ink:#e0ab6a; --stg-p1a-line:#4a3a22;
+  --stg-road-ink:#7f8c99; --stg-road-line:#2b3640;
 }
 /* ---- Claims & Litigation environment: its own accent, so you always know where you are ---- */
 body[data-env="claims"]{--accent:#4a3aa7; --accent-ink:#ffffff; --accent-soft:#ecebf8; --accent-line:#c7c2ea}
@@ -135,14 +147,22 @@ nav.tabs button.empty::after{content:"";display:inline-block;width:4px;height:4p
 .seg button{appearance:none; border:0; background:none; font:inherit; font-size:12px; font-weight:500;
   color:var(--ink-2); padding:4px 11px; border-radius:6px; cursor:pointer; white-space:nowrap}
 .seg button:hover{color:var(--ink)}
-.seg button[aria-pressed="true"]{background:var(--accent); color:var(--accent-ink); font-weight:600}
+.seg button[aria-pressed="true"]{font-weight:600}
 /* stage chips on cards */
 .stg{font-size:9.5px; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
   padding:2px 6px; border-radius:4px; border:1px solid var(--line); color:var(--muted); background:var(--surface-2); white-space:nowrap}
-.stg.mvp{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
-.stg.p1{color:var(--ink-2)}
-.stg.p1a{color:var(--serious-ink); border-color:color-mix(in srgb,var(--serious) 40%,transparent); background:color-mix(in srgb,var(--serious) 10%,transparent)}
-.stg.road{color:var(--muted)}
+.stg.mvp{color:var(--stg-mvp-ink); border-color:var(--stg-mvp-line); background:var(--stg-mvp-bg);
+  box-shadow:0 1px 2px rgba(13,91,107,.22)}
+.stg.p1{color:var(--stg-p1-ink); border-color:var(--stg-p1-line); background:var(--stg-p1-bg)}
+.stg.p1a{color:var(--stg-p1a-ink); border-color:var(--stg-p1a-line); background:var(--stg-p1a-bg)}
+.stg.road{color:var(--stg-road-ink); border-color:var(--stg-road-line); background:transparent; border-style:dashed}
+/* the release filter carries the same colour as the stage it selects */
+.seg button[data-f="mvp"][aria-pressed="true"]{background:var(--stg-mvp-bg); color:var(--stg-mvp-ink)}
+.seg button[data-f="p1"][aria-pressed="true"]{background:var(--stg-p1-bg); color:var(--stg-p1-ink); box-shadow:inset 0 0 0 1px var(--stg-p1-line)}
+.seg button[data-f="all"][aria-pressed="true"]{background:var(--surface); color:var(--ink); box-shadow:inset 0 0 0 1px var(--line)}
+/* stage key beside the filter */
+.stgkey{display:inline-flex; align-items:center; gap:9px; flex-wrap:wrap; font-size:10.5px; color:var(--muted)}
+.stgkey .stg{cursor:default}
 .card[hidden]{display:none}
 .emptystate{background:var(--surface); border:1px dashed var(--line); border-radius:var(--r);
   padding:26px 18px; text-align:center; color:var(--muted); font-size:12.5px; margin-top:14px}
@@ -268,6 +288,15 @@ aside.drawer.on{transform:none}
 .pill{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10.5px;font-weight:600;font-variant-numeric:tabular-nums}
 .pill.g{color:var(--good-ink);background:color-mix(in srgb,var(--good) 13%,transparent)}
 .pill.r{color:var(--critical-ink);background:color-mix(in srgb,var(--critical) 12%,transparent)}
+.qclick{cursor:pointer; border-radius:6px; margin-inline:-6px; padding-inline:6px}
+.qclick:hover{background:var(--surface-2)}
+.qclick:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.qclick .n::after{content:" \203A"; color:var(--muted); font-weight:600}
+.qdisp{font:inherit; font-size:11.5px; padding:3px 6px; border:1px solid var(--line); border-radius:5px;
+  background:var(--surface); color:var(--ink); max-width:168px}
+.qdisp:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.qdisp.set{border-color:var(--accent-line); background:var(--accent-soft); color:var(--accent); font-weight:600}
+.qdemo{font-size:10.5px; color:var(--muted); font-style:italic; margin:6px 0 0}
 footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:1px solid var(--line); margin-top:22px}
 @media (max-width:1100px){ .kpis{grid-template-columns:repeat(3,1fr)} .g-32,.g-2,.g-23{grid-template-columns:1fr} }
 @media (max-width:560px){ .kpis{grid-template-columns:repeat(2,1fr)} .kpi .val{font-size:22px} }
@@ -313,6 +342,7 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
         <button data-f="mvp" aria-pressed="false">MVP</button>
       </div>
       <span class="sbn" id="stagecount"></span>
+      <span class="stgkey" id="stgkey" aria-label="Release stage key"></span>
     </div>
     <nav class="tabs" role="tablist" aria-label="Views">
       <button role="tab" aria-selected="true" data-tab="overview">Overview</button>
@@ -637,7 +667,7 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
 
 <script>
 /* ============ build stamp — single source of truth (set by stamp.py) ============ */
-const BUILD={v:"1.1", date:"11 Nov 2026", time:"19:45", DATE:"11 NOV 2026"};
+const BUILD={v:"1.2", date:"11 Nov 2026", time:"20:30", DATE:"11 NOV 2026"};
 document.getElementById('asof').insertAdjacentHTML('beforeend',
   `Prototype updated ${BUILD.date}, ${BUILD.time}`);
 document.getElementById('buildbadge').textContent=`BUILD ${BUILD.v} \u00b7 ${BUILD.DATE}`;
@@ -1287,12 +1317,64 @@ $('#t-members').innerHTML = `
     <td style="color:var(--ink-2)">${esc(["Abnormal result follow-up","Diagnosis — missed or delayed","Monitoring and failure to rescue","Transfer and handoff"][i%4])}</td>
     <td>${m.refocus==='—'?'<span style="color:var(--muted)">—</span>':`<span class="chip">${esc(m.refocus)}</span>`}</td></tr>`).join('')}</tbody>`;
 
-$('#queue-summary').innerHTML = [['Supported — clinical issue asserted',9,'--critical'],
-  ['Recorded — visible, not yet supported',8,'--warning'],['Proposed — needs further material',6,'--muted']]
-  .map(r=>`<li><span style="width:8px;height:8px;border-radius:50%;background:var(${r[2]});flex:none;margin-top:7px"></span>
-  <span style="flex:1">${esc(r[0])}</span><span class="n">${r[1]}</span></li>`).join('') +
+const QSTATES=[
+  {k:'supported', lab:'Supported \u2014 clinical issue asserted', n:9, col:'--critical',
+   note:'The record supports the issue. A named reviewer must disposition each one.'},
+  {k:'recorded',  lab:'Recorded \u2014 visible, not yet supported', n:8, col:'--warning',
+   note:'Visible in the produced documents, not yet supported by a citable passage.'},
+  {k:'proposed',  lab:'Proposed \u2014 needs further material', n:6, col:'--muted',
+   note:'Surfaced for review; the record is incomplete.'}];
+
+/* Reviewer is shown by role and member hospital rather than by individual name \u2014 the
+   queue is a work list, not an attribution of the clinical judgement to a person. */
+const QROLES=['Risk Manager','Patient Safety Officer','Quality Director','Clinical Risk Reviewer'];
+function queueRows(k){
+  const st=QSTATES.find(s=>s.k===k);
+  const pool=OPEN.filter(m=>m.grade===k);
+  return pool.slice(0,st.n).map((m,i)=>({
+    id:m.id, member:'Member Hospital '+m.member, cat:m.cat, service:m.service, sev:m.sev,
+    role:QROLES[(i+k.length)%4], days:((i*3+k.length)%12)+1, gaps:m.gaps}));
+}
+function openQueueState(k){
+  const st=QSTATES.find(s=>s.k===k), rows=queueRows(k), over=rows.filter(r=>r.days>10).length;
+  drillDrawer('Clinical review queue \u00b7 awaiting disposition', st.lab,
+    `<div class="bt"><b>${rows.length}</b> items awaiting disposition${over?` &nbsp;\u00b7&nbsp; <b style="color:var(--critical-ink)">${over}</b> past the 10-day target`:''}</div>
+     <p class="note" style="margin:0 0 10px">${esc(st.note)} Target: 10 business days.</p>`,
+    `<table><tbody>${rows.map(r=>`<tr>
+       <td style="width:46%">
+         <div><span class="mono">${esc(r.id)}</span>
+           <span class="chip" style="margin-left:5px;${r.days>10?'color:var(--critical-ink);border-color:color-mix(in srgb,var(--critical) 40%,transparent);background:color-mix(in srgb,var(--critical) 10%,transparent)':''}">day ${r.days} of 10</span></div>
+         <div style="color:var(--ink-2);margin-top:3px">${esc(r.cat)}</div>
+         <div class="note" style="margin:2px 0 0">${esc(r.member)} \u00b7 ${esc(r.service)}</div></td>
+       <td>
+         <div style="color:var(--accent);font-weight:600">${esc(r.role)}</div>
+         <div class="note" style="margin:2px 0 6px">${esc(r.member)}</div>
+         <select class="qdisp" aria-label="Disposition for ${esc(r.id)}">
+           <option value="">Awaiting disposition</option>
+           <option>Submit to PSO</option>
+           <option>Retain as work product</option>
+           <option>Discard</option></select></td></tr>`).join('')}</tbody></table>
+     <p class="note" style="margin-top:10px">Reviewer is shown by role and member hospital. The disposition is the operative record \u2014 a finding changes nothing on its own, and the system takes no action on these items (parameter P.5).</p>
+     <p class="qdemo" id="qdemo">Prototype \u2014 dispositions are illustrative and are not recorded.</p>`);
+  drawer.querySelectorAll('.qdisp').forEach(sel=>sel.addEventListener('change',()=>{
+    sel.classList.toggle('set', !!sel.value);
+    const d=$('#qdemo');
+    if(d) d.textContent = sel.value
+      ? `Prototype \u2014 \u201c${sel.value}\u201d selected. Illustrative only; nothing is recorded.`
+      : 'Prototype \u2014 dispositions are illustrative and are not recorded.';
+  }));
+}
+$('#queue-summary').innerHTML = QSTATES
+  .map(r=>`<li class="qclick" role="button" tabindex="0" data-q="${r.k}">
+  <span style="width:8px;height:8px;border-radius:50%;background:var(${r.col});flex:none;margin-top:7px"></span>
+  <span style="flex:1">${esc(r.lab)}</span><span class="n">${r.n}</span></li>`).join('') +
   `<li style="border-top:1px solid var(--line);margin-top:4px;padding-top:11px">
      <span class="chip pso">PSO submission candidates</span><span class="n" style="margin-left:auto">5</span></li>`;
+$('#queue-summary').addEventListener('click',e=>{
+  const li=e.target.closest('li[data-q]'); if(li) openQueueState(li.dataset.q);});
+$('#queue-summary').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ') return;
+  const li=e.target.closest('li[data-q]'); if(li){e.preventDefault(); openQueueState(li.dataset.q);}});
 
 $('#t-cross').innerHTML = `
   <thead><tr><th>Information</th><th>Risk &amp; Patient Safety</th><th>Claims &amp; Litigation</th><th>Rule</th></tr></thead>
@@ -1665,6 +1747,12 @@ document.querySelectorAll('.card[data-stage]').forEach(c=>{
   }
 });
 
+function renderStageKey(){
+  const el=$('#stgkey'); if(!el) return;
+  el.innerHTML=['mvp','p1','p1a','road']
+    .map(s=>`<span class="stg ${s}">${STAGE_LABEL[s]}</span>`).join('');
+}
+renderStageKey();
 function applyStage(){
   const allow=STAGE_IN[STAGE_FILTER];
   let shown=0, total=0;

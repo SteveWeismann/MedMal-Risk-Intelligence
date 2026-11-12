@@ -435,6 +435,20 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
     </div>
   </section>
 
+    <div class="card" data-stage="p1" style="margin-top:14px">
+      <header><h2>Email attachments from the claims system</h2><span class="hint">Objective 1.1 &amp; 1.4 &middot; CHART annotation</span></header>
+      <p class="lead">Documents attached to correspondence in the claims system are carried across with the matter, converted, and summarized here &mdash; so an attachment buried in an email thread is not a document the analysis never saw.</p>
+      <div class="body tscroll"><table id="t-attach"></table></div>
+      <p class="note" style="padding:0 15px 14px">Read-only, one way. Nothing is written back to the claims system (parameter P.1). Whether each attachment carries a key tying it to its matter is an open technical question with the claims-system vendor.</p>
+    </div>
+
+    <div class="card" data-stage="p1" style="margin-top:14px">
+      <header><h2>Clinicians and APPs identified in the record</h2><span class="hint">Objective 1A.1 &middot; CHART annotation</span></header>
+      <p class="lead">Everyone the record shows as involved in the care at issue, whether or not they are named in the claim &mdash; including advanced practice providers and contracted staff whose coverage status may differ from the member&rsquo;s.</p>
+      <div class="body tscroll"><table id="t-providers"></table></div>
+      <p class="note" style="padding:0 15px 14px">Identification of involvement only. The platform does not score, rank or evaluate individual practitioners, and makes no credentialing or peer-review determination (parameters P.3 and P.5). Coverage status is a CHART determination; the platform surfaces that the question exists.</p>
+    </div>
+
   <!-- ================= CLAIMS SUPPORT ================= -->
   <section id="claims" hidden>
     <div class="notice stage-note" data-stage="p1a" style="margin-top:14px;background:var(--surface-2);border-color:var(--line)">
@@ -475,6 +489,15 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
       <div class="body tscroll"><table id="t-comp"></table></div>
     </div>
   </section>
+
+    <div class="card" data-stage="p1a" style="margin-top:14px">
+      <header><h2>External benchmark &mdash; malpractice claims database</h2><span class="hint">Summary objective S.3 &middot; CHART annotation</span></header>
+      <p class="lead">CHART&rsquo;s own experience set against external malpractice claims data, so a pattern that looks alarming in isolation can be read against what the wider book does.</p>
+      <div class="body tscroll"><table id="t-extbench"></table></div>
+      <div class="body" style="padding-top:0"><h4 style="margin:4px 0 8px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500">Source corpora and licence position</h4>
+        <div class="tscroll"><table id="t-extsrc"></table></div></div>
+      <p class="note" style="padding:0 15px 14px">Which external corpora are acquired, and on what licence, is an open item &mdash; CHART and MAPS to coordinate (annotation on S.3). External data informs comparison only; it does not generate a value figure for an open matter (objective 1A.2).</p>
+    </div>
 
   <!-- ================= MITIGATION & TRENDS ================= -->
   <section id="mitigation" hidden>
@@ -523,6 +546,13 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
       <div class="body tscroll"><table id="t-members"></table></div>
     </div>
   </section>
+
+    <div class="card" data-stage="p1" style="margin-top:14px">
+      <header><h2>Claims activity against exposure</h2><span class="hint">Objective 1.5 &amp; 1.9 &middot; CHART annotation</span></header>
+      <p class="lead">Findings per matter answer how the analysis is performing. Claims per unit of exposure &mdash; per delivery, per ED visit, per patient day &mdash; is how an underwriter reads the book. Exposure volumes are refreshed annually.</p>
+      <div class="body tscroll"><table id="t-exposure"></table></div>
+      <p class="note" style="padding:0 15px 14px">Projection is the current-year rate extended on year-to-date exposure and reported claims. It is an arithmetic projection, not an actuarial estimate, and carries no implication for premium, reserves or dividend.</p>
+    </div>
 
   <!-- ================= REPORTS ================= -->
   <section id="reports" hidden>
@@ -607,7 +637,7 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
 
 <script>
 /* ============ build stamp — single source of truth (set by stamp.py) ============ */
-const BUILD={v:"1.0", date:"27 Sep 2026", time:"21:45", DATE:"27 SEP 2026"};
+const BUILD={v:"1.1", date:"11 Nov 2026", time:"19:45", DATE:"11 NOV 2026"};
 document.getElementById('asof').insertAdjacentHTML('beforeend',
   `Prototype updated ${BUILD.date}, ${BUILD.time}`);
 document.getElementById('buildbadge').textContent=`BUILD ${BUILD.v} \u00b7 ${BUILD.DATE}`;
@@ -805,6 +835,75 @@ const NEGATIVE = [["Consent documentation",312,"Reviewed in every matter; 62 fin
   ["Interpreter use and language access",271,"Reviewed; 4 findings raised"],
   ["Equipment and device records",104,"Reviewed where present; no findings raised"],
   ["Restraint documentation",46,"Reviewed where present; no findings raised"]];
+
+/* ============ CHART SOW annotations — capabilities added 11 Nov 2026 ============ */
+
+/* Annotation on 1.4: "For any attached documents inside an EMAIL in Sapiens, when it
+   comes over to GPS these attachments must come over and be summarized in the DASHBOARD." */
+const ATTACH=[
+ {d:"25 Sep 08:12", id:"CH-2411", from:"Defense counsel", subj:"ED records — supplemental production",
+  n:3, kinds:"PDF × 2, TIFF × 1", sum:"Supplemental ED record including the 02:14 laboratory result and the discharge order. Carries the passage the open finding on this matter rests on.", st:"Analyzed"},
+ {d:"24 Sep 16:40", id:"CH-2416", from:"Member risk manager", subj:"Transfer note as requested",
+  n:1, kinds:"PDF", sum:"Transfer note for the 3 Day admission. Medication reconciliation section present; receiving service MAR still absent.", st:"Analyzed"},
+ {d:"24 Sep 11:05", id:"CH-2402", from:"Outside imaging centre", subj:"CT series and report",
+  n:4, kinds:"PDF × 1, DICOM × 3", sum:"Outside imaging received. Report confirms the 9 mm nodule and the interval-imaging recommendation. Closed one information gap.", st:"Analyzed"},
+ {d:"23 Sep 14:22", id:"CH-2389", from:"Claims administrator", subj:"Fwd: triage staffing enquiry",
+  n:2, kinds:"XLSX × 1, MSG × 1", sum:"Department census for the shift, partial. Does not cover the triage window; the staffing gap on this matter stays open.", st:"Gap remains"},
+ {d:"23 Sep 09:58", id:"CH-2421", from:"Pharmacy", subj:"MAR extract",
+  n:1, kinds:"PDF", sum:"Administration record received. Dosing weight still not in the produced materials, so the renal calculation cannot be closed.", st:"Gap remains"},
+ {d:"22 Sep 17:31", id:"CH-2398", from:"Defense counsel", subj:"L&D flowsheet pages 3-4",
+  n:1, kinds:"PDF", sum:"Flowsheet pages carrying the Category II tracing interval and the 19:55 assessment entry.", st:"Analyzed"}];
+
+/* Annotation on 1.7: "important to identify all non-insured Clinicians and APPs that were
+   attributing to this case (i.e. NP that is not named in claim)." */
+const PROVIDERS=[
+ {id:"CH-2411", who:"Nurse practitioner", svc:"Emergency medicine", named:false, ins:"Not insured by CHART",
+  basis:"Signed the discharge order at 02:51. Appears in the record; not named in the claim.", act:"Coverage review"},
+ {id:"CH-2411", who:"Attending physician", svc:"Emergency medicine", named:true, ins:"CHART member insured",
+  basis:"Named defendant. Supervising entry at 01:47.", act:"—"},
+ {id:"CH-2389", who:"Triage nurse", svc:"Emergency medicine", named:false, ins:"CHART member insured",
+  basis:"Assigned acuity level 4 at 07:19. Central to the documented interval; not named.", act:"Statement sought"},
+ {id:"CH-2389", who:"Radiology technologist", svc:"Radiology", named:false, ins:"Contracted — status unconfirmed",
+  basis:"Performed the 12:24 head CT. Employment relationship not established in the produced record.", act:"Confirm status"},
+ {id:"CH-2398", who:"Certified nurse midwife", svc:"Obstetrics and gynecology", named:false, ins:"Not insured by CHART",
+  basis:"Documented the 18:35 vitals during the Category II interval.", act:"Coverage review"},
+ {id:"CH-2416", who:"Physician assistant", svc:"General surgery", named:false, ins:"CHART member insured",
+  basis:"Completed the medication reconciliation that omitted the anticoagulant.", act:"Statement sought"},
+ {id:"CH-2402", who:"Radiologist", svc:"Radiology", named:false, ins:"Contracted — status unconfirmed",
+  basis:"Authored the recommendation for interval imaging that was not ordered.", act:"Confirm status"}];
+
+/* Annotation on 1.9: "Claims activity vs Exposure - for meaningful benchmarking (How many
+   claims per birth, etc.)...get this data updated annually. Current year and projections." */
+const EXPOSURE=[
+ {svc:"Obstetrics", unit:"per 1,000 deliveries", vol:"14,280", cl:21, rate:1.47, prior:1.62, proj:1.41},
+ {svc:"Emergency medicine", unit:"per 10,000 ED visits", vol:"412,600", cl:38, rate:0.92, prior:0.86, proj:0.95},
+ {svc:"Inpatient — all services", unit:"per 1,000 patient days", vol:"288,400", cl:47, rate:0.16, prior:0.17, proj:0.16},
+ {svc:"Surgical", unit:"per 1,000 procedures", vol:"39,150", cl:26, rate:0.66, prior:0.59, proj:0.70},
+ {svc:"Ambulatory", unit:"per 10,000 visits", vol:"706,900", cl:19, rate:0.27, prior:0.29, proj:0.26},
+ {svc:"All exposures combined", unit:"per 100 occupied beds", vol:"812", cl:151, rate:1.55, prior:1.58, proj:1.54}];
+
+/* Annotation on S.3: "Include OUTSIDE Claims DataBase: Donna and I to coordinate what type,
+   how to acquire." Also 1A.2 on external valuation reference. */
+const EXTBENCH=[
+ ["Diagnosis — missed or delayed","23.5% of claims","31.2%","Below","National MPL closed-claim aggregate"],
+ ["Abnormal result follow-up","17.2%","9.4%","Above","National MPL closed-claim aggregate"],
+ ["Obstetrical management","7.7%","11.8%","Below","National MPL closed-claim aggregate"],
+ ["Median severity, resolved matters","6 of 9","6 of 9","In line","NPDB public use file"],
+ ["Share resolving with indemnity","31%","29%","In line","NPDB public use file"],
+ ["ALAE as share of total incurred","31%","26%","Above","National MPL closed-claim aggregate"]];
+const EXTSOURCES=[
+ ["NPDB Public Use Data File","Free download, HRSA. Re-identification prohibited.","Acquired"],
+ ["Caselaw Access Project / CourtListener","Open, bulk download and API.","Acquired"],
+ ["Clinical Legal Accountability Dataset","CC BY-NC-ND 4.0 — commercial use needs author permission.","Being confirmed"],
+ ["CRICO CBS / MPL Association Data Sharing Project","Membership or licence required.","Not acquired"],
+ ["MIMIC-IV and MIMIC-IV-Note","PhysioNet credentialed licence, DUA per project.","Credentialing in progress"]];
+
+/* Annotation on 1.4: "Ability to add 'NOTES' to any claim in the Risk Platform." */
+const NOTES={
+ "CH-2411":[{w:"T. Whelan",r:"Patient safety reviewer",d:"25 Sep 09:12",t:"Spoke with the member risk manager. The result-acknowledgement step is in their policy; they are pulling the policy version in force in March."}],
+ "CH-2389":[{w:"R. Alvarez",r:"Patient safety reviewer",d:"24 Sep 15:40",t:"Triage staffing records requested a second time. Without the census for the window we cannot say whether acuity or queue position drove the delay."},
+            {w:"T. Whelan",r:"Patient safety lead",d:"22 Sep 11:02",t:"Agreed at review: hold at supported. Do not escalate the causation element until the rehabilitation records arrive."}],
+ "CH-2416":[{w:"M. Boyd",r:"Patient safety reviewer",d:"23 Sep 10:18",t:"Receiving service MAR still outstanding. Grade stays recorded until it is produced."}]};
 
 /* ---- two environments, per CHART's 27 Sep review comment ---- */
 const ENVS={
@@ -1501,6 +1600,19 @@ function openFinding(id){
         <dt>Escalation signal</dt><dd>${f.sig?'<span class="chip sup">Present</span>':'<span style="color:var(--muted)">None</span>'}</dd>
       </dl>
       <p class="note">Comparable historical matters and posture considerations are on the Claims support view.</p></div>` : ''}
+    ${ENV==='risk' ? `
+    <div class="dsec"><h4>Notes <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-weight:400">· CHART annotation</span></h4>
+      ${(NOTES[f.id]||[]).map(n=>`<div style="padding:8px 0;border-bottom:1px solid var(--line-soft)">
+        <div style="display:flex;gap:8px;align-items:baseline;font-size:11.5px;color:var(--muted)">
+          <b style="color:var(--ink);font-size:12.5px;font-weight:600">${esc(n.w)}</b><span>${esc(n.r)}</span>
+          <span style="margin-left:auto" class="mono">${esc(n.d)}</span></div>
+        <div style="font-size:12.5px;color:var(--ink-2);margin-top:3px">${esc(n.t)}</div></div>`).join('')
+       || '<p class="note" style="margin:0 0 8px">No notes on this matter yet.</p>'}
+      <textarea id="notebox" rows="2" placeholder="Add a note to this matter…" style="width:100%;margin-top:9px;font:inherit;font-size:12.5px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);color:var(--ink);resize:vertical"></textarea>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:7px">
+        <button class="act" id="notesave" style="flex:0 0 auto;min-width:0;padding:7px 14px">Add note</button>
+        <span class="note" style="margin:0">A note is reviewer commentary, not a finding, and does not change a disposition.</span></div>
+    </div>` : ''}
     <div class="dsec" style="border-bottom:0"><h4>Disposition</h4>
       <p style="margin:0;font-size:12px;color:var(--ink-2)">${ENV==='risk'
         ? 'Findings on open claims do not rest in the analytics environment. A named reviewer must dispose of this one.'
@@ -1514,6 +1626,14 @@ function openFinding(id){
   drawer.hidden=false; scrim.hidden=false;
   requestAnimationFrame(()=>{drawer.classList.add('on');scrim.classList.add('on');});
   $('#dclose').focus(); $('#dclose').addEventListener('click',closeDrawer);
+  const nb=$('#notebox'), ns=$('#notesave');
+  if(nb&&ns) ns.addEventListener('click',()=>{
+    const t=nb.value.trim(); if(!t) return;
+    const now=new Date(), hh=String(now.getHours()).padStart(2,'0'), mm=String(now.getMinutes()).padStart(2,'0');
+    (NOTES[f.id]=NOTES[f.id]||[]).unshift({w:'You',r:ROLE==='both'?'Both roles':'Patient safety reviewer',
+      d:`Now ${hh}:${mm}`, t:t});
+    openFinding(f.id);
+  });
 }
 function closeDrawer(){drawer.classList.remove('on');scrim.classList.remove('on');
   setTimeout(()=>{drawer.hidden=true;scrim.hidden=true;},200);}
@@ -1684,6 +1804,56 @@ document.querySelectorAll('nav.tabs button').forEach(b=>{
 });
 
 /* ============ render ============ */
+/* ============ renderers for the CHART-annotated capabilities ============ */
+function renderAttach(){
+  const el=$('#t-attach'); if(!el) return;
+  el.innerHTML=`<thead><tr><th>Received</th><th>Matter</th><th>Attachments</th><th>Summary</th><th>Status</th></tr></thead>
+   <tbody>${ATTACH.map(a=>`<tr class="clickable" data-open="${a.id}" tabindex="0">
+     <td class="mono" style="white-space:nowrap">${esc(a.d)}<br><span style="color:var(--muted);font-size:11px">${esc(a.from)}</span></td>
+     <td><span class="mono">${esc(a.id)}</span></td>
+     <td><b class="num">${a.n}</b><br><span style="color:var(--muted);font-size:11px">${esc(a.kinds)}</span></td>
+     <td style="color:var(--ink-2)">${esc(a.subj)}<div style="margin-top:3px">${esc(a.sum)}</div></td>
+     <td><span class="chip ${a.st==='Analyzed'?'pso':'rec'}">${esc(a.st)}</span></td></tr>`).join('')}</tbody>`;
+}
+function renderProviders(){
+  const el=$('#t-providers'); if(!el) return;
+  el.innerHTML=`<thead><tr><th>Matter</th><th>Role</th><th>Service</th><th>Named in claim</th><th>Coverage status</th><th>Basis in the record</th><th>Action</th></tr></thead>
+   <tbody>${PROVIDERS.map(p=>`<tr class="clickable" data-open="${p.id}" tabindex="0">
+     <td><span class="mono">${esc(p.id)}</span></td>
+     <td style="font-weight:500">${esc(p.who)}</td>
+     <td style="color:var(--ink-2)">${esc(p.svc)}</td>
+     <td>${p.named?'<span class="chip">Named</span>':'<span class="chip sup">Not named</span>'}</td>
+     <td>${p.ins.indexOf('unconfirmed')>-1?`<span class="chip rec">${esc(p.ins)}</span>`
+        :p.ins.indexOf('Not insured')>-1?`<span class="chip sup">${esc(p.ins)}</span>`
+        :`<span class="chip pso">${esc(p.ins)}</span>`}</td>
+     <td style="color:var(--ink-2)">${esc(p.basis)}</td>
+     <td>${p.act==='—'?'<span style="color:var(--muted)">—</span>':`<span class="chip">${esc(p.act)}</span>`}</td></tr>`).join('')}</tbody>`;
+}
+function renderExposure(){
+  const el=$('#t-exposure'); if(!el) return;
+  el.innerHTML=`<thead><tr><th>Exposure base</th><th class="r">Volume</th><th class="r">Claims</th><th class="r">Rate</th><th class="r">Prior year</th><th class="r">Current-year projection</th></tr></thead>
+   <tbody>${EXPOSURE.map(e=>{const d=e.rate-e.prior, pd=e.proj-e.rate;
+     return `<tr><td style="font-weight:500">${esc(e.svc)}<br><span style="color:var(--muted);font-size:11px;font-weight:400">${esc(e.unit)}</span></td>
+     <td class="r num">${esc(e.vol)}</td><td class="r num">${e.cl}</td>
+     <td class="r num" style="font-weight:600">${e.rate.toFixed(2)}</td>
+     <td class="r num" style="color:var(--muted)">${e.prior.toFixed(2)}
+       <div style="font-size:11px;color:${d>0?'var(--critical-ink)':d<0?'var(--good-ink)':'var(--muted)'}">${d>0?'+':''}${d.toFixed(2)}</div></td>
+     <td class="r num">${e.proj.toFixed(2)}
+       <div style="font-size:11px;color:${pd>0?'var(--critical-ink)':pd<0?'var(--good-ink)':'var(--muted)'}">${pd>0?'+':''}${pd.toFixed(2)}</div></td></tr>`;}).join('')}</tbody>`;
+}
+function renderExt(){
+  const a=$('#t-extbench'), b=$('#t-extsrc'); if(!a||!b) return;
+  a.innerHTML=`<thead><tr><th>Measure</th><th class="r">CHART</th><th class="r">External benchmark</th><th>Position</th><th>Source</th></tr></thead>
+   <tbody>${EXTBENCH.map(r=>`<tr><td style="font-weight:500">${esc(r[0])}</td>
+     <td class="r num">${esc(r[1])}</td><td class="r num" style="color:var(--ink-2)">${esc(r[2])}</td>
+     <td><span class="chip ${r[3]==='Above'?'sup':r[3]==='Below'?'new':''}">${esc(r[3])}</span></td>
+     <td style="color:var(--ink-2)">${esc(r[4])}</td></tr>`).join('')}</tbody>`;
+  b.innerHTML=`<thead><tr><th>Corpus</th><th>Licence position</th><th>Status</th></tr></thead>
+   <tbody>${EXTSOURCES.map(r=>`<tr><td style="font-weight:500">${esc(r[0])}</td>
+     <td style="color:var(--ink-2)">${esc(r[1])}</td>
+     <td><span class="chip ${r[2]==='Acquired'?'pso':r[2]==='Not acquired'?'':'rec'}">${esc(r[2])}</span></td></tr>`).join('')}</tbody>`;
+}
+
 function renderAll(){
   const byCat=(l,v)=>drillBy('Clinical category',l,v,'findings across the portfolio',m=>m.cat===l);
   hbar('#c-cat',CATS,{aria:'Findings by clinical category',onBar:byCat});
@@ -1703,6 +1873,7 @@ function renderAll(){
   lolli('#c-members',MEMBERS);
   impact('#c-impact',IMPACT);
   priorityTable(); devTable();
+  renderAttach(); renderProviders(); renderExposure(); renderExt();
 }
 renderAll();
 applyEnv();

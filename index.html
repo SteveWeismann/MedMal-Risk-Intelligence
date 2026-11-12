@@ -297,6 +297,47 @@ aside.drawer.on{transform:none}
 .qdisp:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
 .qdisp.set{border-color:var(--accent-line); background:var(--accent-soft); color:var(--accent); font-weight:600}
 .qdemo{font-size:10.5px; color:var(--muted); font-style:italic; margin:6px 0 0}
+.srch{position:relative; display:inline-flex; align-items:center; gap:7px; height:32px; padding:0 9px 0 11px;
+  background:var(--surface-2); border:1px solid var(--line); border-radius:7px; color:var(--muted);
+  transition:border-color .12s, background .12s}
+.srch:focus-within{border-color:var(--accent-line); background:var(--surface); color:var(--accent)}
+.srch input{appearance:none; border:0; background:none; font:inherit; font-size:12.5px; color:var(--ink);
+  width:190px; padding:0; outline:none}
+.srch input::placeholder{color:var(--muted)}
+.srch input::-webkit-search-cancel-button{appearance:none}
+.srch kbd{font:inherit; font-size:10px; font-weight:600; color:var(--muted); background:var(--surface);
+  border:1px solid var(--line); border-radius:4px; padding:1px 5px; line-height:1.4}
+.srch:focus-within kbd{opacity:0}
+@media (max-width:760px){ .srch input{width:120px} .srch kbd{display:none} }
+mark{background:color-mix(in srgb,var(--warning) 36%,transparent); color:inherit; border-radius:2px; padding:0 1px}
+.hitrow{padding:11px 0; border-bottom:1px solid var(--line-soft); cursor:pointer}
+.hitrow:last-of-type{border-bottom:0}
+.hitrow:hover{background:var(--surface-2)}
+.hitrow:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+.why{font-size:11px; color:var(--muted); margin-top:4px}
+.why b{color:var(--ink-2); font-weight:600}
+.srchnote{display:flex; gap:9px; align-items:flex-start; border-radius:9px; padding:10px 12px; font-size:12px;
+  background:var(--surface-2); border:1px dashed var(--line); color:var(--ink-2); margin:0 0 12px}
+.docgrp{margin:0 0 4px}
+.docgrp h5{margin:12px 0 5px; font-size:11px; font-weight:600; color:var(--ink-2); letter-spacing:.01em}
+.docgrp h5:first-child{margin-top:0}
+details.doc{border-bottom:1px solid var(--line-soft)}
+details.doc:last-child{border-bottom:0}
+details.doc > summary{list-style:none; cursor:pointer; padding:8px 0; display:flex; gap:9px; align-items:flex-start}
+details.doc > summary::-webkit-details-marker{display:none}
+details.doc > summary::after{content:""; width:6px; height:6px; margin:5px 0 0 auto; flex:none;
+  border-right:1.5px solid var(--muted); border-bottom:1.5px solid var(--muted);
+  transform:rotate(-45deg); transition:transform .14s}
+details.doc[open] > summary::after{transform:rotate(45deg)}
+details.doc > summary:hover{background:var(--surface-2)}
+details.doc > summary:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+.dicon{width:22px;height:22px;border-radius:6px;flex:none;display:grid;place-items:center;margin-top:1px;
+  background:var(--surface-2); border:1px solid var(--line); color:var(--muted); font-size:9px; font-weight:700}
+.dmeta{font-size:11px; color:var(--muted); margin-top:2px}
+.dbody{padding:0 0 11px 31px; font-size:12px; color:var(--ink-2)}
+.dbody dl{margin:0; display:grid; grid-template-columns:104px 1fr; gap:4px 10px; font-size:11.5px}
+.dbody dt{color:var(--muted)} .dbody dd{margin:0; color:var(--ink)}
+.cited{box-shadow:inset 3px 0 0 var(--seq)}
 footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:1px solid var(--line); margin-top:22px}
 @media (max-width:1100px){ .kpis{grid-template-columns:repeat(3,1fr)} .g-32,.g-2,.g-23{grid-template-columns:1fr} }
 @media (max-width:560px){ .kpis{grid-template-columns:repeat(2,1fr)} .kpi .val{font-size:22px} }
@@ -332,6 +373,14 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
       <select class="ctl" id="period" aria-label="Period">
         <option>Rolling 24 months</option><option>Rolling 12 months</option><option>Policy year to date</option>
       </select>
+      <div class="srch">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <circle cx="7" cy="7" r="4.6" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10.6 10.6 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input id="q" type="search" autocomplete="off" spellcheck="false"
+          placeholder="Find a matter&hellip;" aria-label="Find a matter by any identifier">
+        <kbd id="qkbd">/</kbd>
+      </div>
       <span class="asof" id="asof"><span class="dot"></span></span>
     </div>
     <div class="stagebar">
@@ -667,7 +716,7 @@ footer.pg{padding:20px 0 10px; font-size:11.5px; color:var(--muted); border-top:
 
 <script>
 /* ============ build stamp — single source of truth (set by stamp.py) ============ */
-const BUILD={v:"1.2", date:"11 Nov 2026", time:"20:30", DATE:"11 NOV 2026"};
+const BUILD={v:"1.4", date:"12 Nov 2026", time:"10:40", DATE:"12 NOV 2026"};
 document.getElementById('asof').insertAdjacentHTML('beforeend',
   `Prototype updated ${BUILD.date}, ${BUILD.time}`);
 document.getElementById('buildbadge').textContent=`BUILD ${BUILD.v} \u00b7 ${BUILD.DATE}`;
@@ -1554,6 +1603,126 @@ function openKpi(i){
   $('#dclose').focus(); $('#dclose').addEventListener('click',closeDrawer);
 }
 
+/* ============ matter search ============ */
+/* A reviewer should be able to reach a matter from whatever identifier they happen to
+   hold. The separation rule applies here too: clinical analysis of an OPEN matter is
+   not indexed in the claims environment at all. Not withheld on display — absent from
+   the index, so a claims-side search cannot reveal that such a finding exists. */
+const CLOSED_CLIN = COMPARABLES.reduce((a,c)=>{a[c.id]=c; return a;},{});
+
+function searchCorpus(){
+  const docs=[];
+  OPEN.forEach(m=>{
+    const t=m.tpl||{};
+    const f=[
+      ['Matter number', m.id, 1],
+      ['Member hospital', 'Member Hospital '+m.member+' member '+m.member, 1],
+      ['Responsible service', m.service, 1],
+      ['Allegation category', m.cat, 1],
+      ['Clinical severity', 'severity '+m.sev+' sev '+m.sev+' '+sevBandOf(m.sev), 1],
+      ['Matter age', m.age, 1],
+      ['Evidentiary grade', m.grade, 1],
+      ['Document ID', docIdOf(m.id), 1],
+      ['Information gaps', (m.gapTypes||[]).join(' ') + (m.gaps?' '+m.gaps+' open gaps':''), 1],
+      ['Escalation signal', m.sig?'escalation signal significant':'', 1],
+      ['Liability factor', (m.liab||[]).join(' '), 1]
+    ];
+    /* clinical fields — risk environment only, for an open matter */
+    const clin=[
+      ['Finding', t.title||'', 0],
+      ['Record extract', t.text||'', 0],
+      ['Reasoning', t.why||'', 0],
+      ['Source citation', t.src||'', 0],
+      ['Contributing factors', (m.factors||[]).join(' '), 0]
+    ];
+    docs.push({id:m.id, kind:'open', member:m.member, title:(t.title||m.cat),
+      sub:'Member Hospital '+m.member+' · '+m.service+' · open '+m.age,
+      fields:f, clinical:clin, sev:m.sev, grade:m.grade});
+  });
+  /* closed matters: CHART confirmed 27 Sep that their clinical findings are available
+     as comparables, so these are indexed in both environments. */
+  COMPARABLES.forEach(c=>{
+    docs.push({id:c.id, kind:'closed', title:'Closed matter — '+c.out,
+      sub:c.yr+' · '+c.dims.join(' · '),
+      fields:[['Matter number', c.id, 1],['Year', c.yr, 1],
+              ['Comparable on', c.dims.join(' '), 1],['Outcome', c.out, 1],
+              ['Clinical finding (closed)', c.clin, 1]],
+      clinical:[]});
+  });
+  return docs;
+}
+let CORPUS=null;
+function runSearch(raw){
+  const q=String(raw||'').trim().toLowerCase();
+  if(q.length<2) return [];
+  CORPUS = CORPUS || searchCorpus();
+  const out=[];
+  CORPUS.forEach(d=>{
+    const pool = d.fields.concat(ENV==='risk' ? d.clinical : []);
+    const why=[];
+    pool.forEach(([name,val])=>{
+      if(!val) return;
+      const s=String(val);
+      const i=s.toLowerCase().indexOf(q);
+      if(i<0) return;
+      const from=Math.max(0,i-26), to=Math.min(s.length,i+q.length+34);
+      why.push({name, snip:(from?'…':'')+s.slice(from,i)+'\u0001'+s.slice(i,i+q.length)+'\u0002'+s.slice(i+q.length,to)+(to<s.length?'…':'')});
+    });
+    if(why.length) out.push({d, why});
+  });
+  /* a matter-number match ranks first, then number of matching fields */
+  out.sort((a,b)=>{
+    const an=a.why.some(w=>w.name==='Matter number')?0:1, bn=b.why.some(w=>w.name==='Matter number')?0:1;
+    return an-bn || b.why.length-a.why.length;
+  });
+  return out;
+}
+function openSearch(raw){
+  const q=String(raw||'').trim();
+  const hits=runSearch(q);
+  const mark=s=>esc(s).replace(/\u0001/g,'<mark>').replace(/\u0002/g,'</mark>');
+  const envNote = ENV==='risk'
+    ? ''
+    : `<div class="srchnote"><div><b>Claims &amp; Litigation environment.</b> Clinical analysis of open matters is not indexed here — not hidden from the results, absent from the index. A search in this environment cannot reveal that a clinical finding on an open matter exists. Closed-matter findings are searchable, as comparables (CHART, 27 Sep).</div></div>`;
+  const body = hits.length
+    ? envNote + hits.map(h=>`
+        <div class="hitrow" data-open="${esc(h.d.id)}" role="button" tabindex="0">
+          <div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">
+            <span class="mono" style="font-weight:600">${esc(h.d.id)}</span>
+            ${h.d.kind==='closed'?'<span class="chip pso">Closed</span>':'<span class="chip">Open</span>'}
+            ${h.d.grade?gradeChip(h.d.grade):''}
+            ${h.d.sev!=null?`<span class="sev" style="margin-left:auto"><span class="sevbar"><i style="width:${h.d.sev*10}%;background:var(${SEVCOL(h.d.sev)})"></i></span><span class="num">${h.d.sev}</span></span>`:''}
+          </div>
+          <div style="font-weight:500;margin-top:3px">${esc(h.d.title)}</div>
+          <div class="note" style="margin:2px 0 0">${esc(h.d.sub)}</div>
+          ${h.why.slice(0,3).map(w=>`<div class="why"><b>${esc(w.name)}</b> &nbsp;${mark(w.snip)}</div>`).join('')}
+          ${h.why.length>3?`<div class="why">and ${h.why.length-3} further field${h.why.length-3>1?'s':''}</div>`:''}
+        </div>`).join('')
+    : envNote + `<p class="note" style="margin:0">No matter matches that. Try a matter number (CH-2411), a member hospital, a service line, an allegation category, a severity, a document ID, or — in the patient safety environment — a word from the record itself.</p>`;
+  drillDrawer('Search', q,
+    `<div class="bt"><b>${hits.length}</b> matter${hits.length===1?'':'s'} matched</div>
+     <p class="note" style="margin:0 0 10px">Matched across matter number, member, service, allegation, severity, age, grade, document ID, information gaps, liability factors${ENV==='risk'?', finding text, record extract, reasoning, source citation and contributing factors':''}.</p>`,
+    body);
+  drawer.querySelectorAll('.hitrow').forEach(r=>{
+    r.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault(); openFinding(r.dataset.open);} });
+  });
+}
+(function(){
+  const box=$('#q'); if(!box) return;
+  let t=null;
+  const go=()=>{ const v=box.value.trim(); if(v.length>=2) openSearch(v); };
+  box.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){ e.preventDefault(); clearTimeout(t); go(); }
+    if(e.key==='Escape'){ box.value=''; box.blur(); if(!drawer.hidden) closeDrawer(); }
+  });
+  box.addEventListener('input',()=>{ clearTimeout(t); t=setTimeout(go,260); });
+  document.addEventListener('keydown',e=>{
+    if(e.key==='/' && document.activeElement!==box && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)){
+      e.preventDefault(); box.focus(); box.select();
+    }
+  });
+})();
+
 const PROV_DATES=["22 Sep 2026","22 Sep 2026","25 Sep 2026 02:10"];
 const docIdOf=id=>'DOC-'+String(id).replace(/\D/g,'')+'-07';
 
@@ -1618,6 +1787,121 @@ function openBand(lab){
   $('#dclose').focus(); $('#dclose').addEventListener('click',closeDrawer);
 }
 
+/* ============ documents and correspondence for a matter ============ */
+/* CHART's own crossing rule: claim documents are available in BOTH environments — they are
+   source material CHART already holds. What does not cross is the clinical reading of them,
+   so the analytical summary on a document is shown in the patient safety environment only. */
+const DOCKINDS=[
+ ['MR','Medical record','Member hospital','Scanned PDF'],
+ ['ED','ED record','Member hospital','Native text'],
+ ['RAD','Radiology report','Member hospital','Native text'],
+ ['EXP','Expert report','Defense counsel','Native text'],
+ ['CN','Claim notes','CHART claims system','Native text'],
+ ['DEP','Deposition transcript','Defense counsel','Native text'],
+ ['POL','Policy document','Member hospital','Scanned PDF'],
+ ['BIL','Billing record','Member hospital','Native text']];
+
+const DOCSEED={
+ 'CH-2411':[['ED','ED record — index admission','00401–00438',38,'22 Sep 2026','Native text',true,
+             'Carries the 02:14 laboratory result and the 02:51 discharge order.'],
+            ['MR','Prior records — 12 months','00439–00512',74,'22 Sep 2026','Scanned PDF',true,
+             'No prior potassium abnormality recorded.'],
+            ['POL','Result acknowledgement policy','00513–00519',7,'24 Sep 2026','Scanned PDF',true,
+             'Member’s own policy, produced in the file. The assessed standard comes from here.'],
+            ['CN','Claim notes to date','00520–00534',15,'22 Sep 2026','Native text',false,'']],
+ 'CH-2389':[['ED','Triage and ED record','00201–00246',46,'18 Sep 2026','Native text',true,
+             'Triage note, acuity assignment and documented onset time.'],
+            ['RAD','Imaging log and head CT report','00247–00262',16,'18 Sep 2026','Native text',true,
+             'Imaging timestamp establishing the 5 hour 12 minute interval.'],
+            ['EXP','Retained expert report — emergency medicine','00263–00298',36,'02 Oct 2026','Native text',true,
+             'Deviation asserted by the retained expert.'],
+            ['MR','Rehabilitation records','—',0,'Not received','—',false,''],
+            ['CN','Claim notes to date','00299–00331',33,'18 Sep 2026','Native text',false,'']],
+ 'CH-2398':[['MR','L&D flowsheet and delivery record','01180–01224',45,'20 Sep 2026','Scanned PDF',true,
+             'Continuous monitoring trace and the 19:55 assessment entry.'],
+            ['POL','Fetal monitoring reassessment policy','01225–01231',7,'20 Sep 2026','Scanned PDF',true,
+             'States the 30 minute reassessment interval.'],
+            ['CN','Claim notes to date','01232–01248',17,'20 Sep 2026','Native text',false,'']],
+ 'CH-2402':[['RAD','CT report, 14 March','00870–00879',10,'19 Sep 2026','Native text',true,
+             'Nodule described with an explicit interval-imaging recommendation.'],
+            ['MR','Primary care records, 12 months','00880–00951',72,'19 Sep 2026','Scanned PDF',true,
+             'No corresponding order, notification or declination in the subsequent record.'],
+            ['RAD','Outside imaging — interval study','00952–00961',10,'24 Sep 2026','Scanned PDF',true,
+             'Received 24 Sep; closed one information gap.'],
+            ['CN','Claim notes to date','00962–00974',13,'19 Sep 2026','Native text',false,'']],
+ 'CH-2416':[['MR','Admission and transfer records','01390–01436',47,'24 Sep 2026','Native text',true,
+             'Transfer note and the receiving service’s first medication reconciliation.'],
+            ['MR','Medication administration record','—',0,'Not received','—',false,''],
+            ['CN','Claim notes to date','01437–01449',13,'24 Sep 2026','Native text',false,'']],
+ 'CH-2421':[['MR','Admission records including laboratory','01500–01548',49,'23 Sep 2026','Native text',true,
+             'Creatinine clearance documented at admission.'],
+            ['BIL','Pharmacy administration record','01549–01562',14,'23 Sep 2026','Native text',true,
+             'Dosing weight not present in the produced materials.'],
+            ['CN','Claim notes to date','01563–01571',9,'23 Sep 2026','Native text',false,'']]};
+
+function docsFor(id){
+  const seed = DOCSEED[id] || DOCSEED[(OPEN.find(m=>m.id===id)||{}).tpl?.id] || DOCSEED['CH-2411'];
+  const base = parseInt(String(id).replace(/\D/g,''),10) || 2400;
+  return seed.map((d,i)=>({
+    doc:'DOC-'+base+'-'+String(i+1).padStart(2,'0'),
+    kind:d[0], title:d[1], bates:d[2], pages:d[3], recd:d[4], fmt:d[5], analyzed:d[6], sum:d[7],
+    src:(DOCKINDS.find(k=>k[0]===d[0])||DOCKINDS[0])[2]
+  }));
+}
+function mailFor(id){
+  const own = (typeof ATTACH!=='undefined' ? ATTACH.filter(a=>a.id===id) : []);
+  if(own.length) return own;
+  const base = parseInt(String(id).replace(/\D/g,''),10)||2400;
+  return [{d:'23 Sep 10:04', id:id, from:'Claims administrator', subj:'Matter file — initial production',
+           n:2, kinds:'PDF × 2', sum:'Initial production for the matter.', st:'Analyzed'}];
+}
+function docSection(id){
+  const docs=docsFor(id), mail=mailFor(id);
+  const clinical = (ENV==='risk');
+  const row=d=>`<details class="doc${d.analyzed&&clinical&&d.sum?' cited':''}">
+    <summary>
+      <span class="dicon">${esc(d.kind)}</span>
+      <span style="flex:1;min-width:0">
+        <span style="font-weight:500;color:var(--ink)">${esc(d.title)}</span>
+        <span class="dmeta">${d.pages?esc(d.pages+' pp · Bates '+d.bates):'<span style="color:var(--critical-ink)">Not received</span>'} · ${esc(d.recd)}</span>
+      </span></summary>
+    <div class="dbody">
+      <dl><dt>Document ID</dt><dd class="mono">${esc(d.doc)}</dd>
+      <dt>Source</dt><dd>${esc(d.src)}</dd>
+      <dt>Format</dt><dd>${esc(d.fmt)}${d.fmt==='Scanned PDF'?' · OCR applied':''}</dd>
+      <dt>Analyzed</dt><dd>${d.analyzed?'Yes · '+esc(PROV_DATES[2]):'<span style="color:var(--muted)">Not analyzed</span>'}</dd></dl>
+      ${clinical&&d.sum?`<p class="note" style="margin:7px 0 0;color:var(--ink-2)">${esc(d.sum)}</p>`:''}
+      <div style="margin-top:8px"><button class="rowbtn" style="font-size:11.5px">Open document</button></div>
+    </div></details>`;
+  const mrow=m=>`<details class="doc">
+    <summary>
+      <span class="dicon">✉</span>
+      <span style="flex:1;min-width:0">
+        <span style="font-weight:500;color:var(--ink)">${esc(m.subj)}</span>
+        <span class="dmeta">${esc(m.from)} · ${esc(m.d)} · ${m.n} attachment${m.n===1?'':'s'} (${esc(m.kinds)})</span>
+      </span></summary>
+    <div class="dbody">
+      <dl><dt>From</dt><dd>${esc(m.from)}</dd>
+      <dt>Received</dt><dd>${esc(m.d)}</dd>
+      <dt>Attachments</dt><dd>${m.n} · ${esc(m.kinds)}</dd>
+      <dt>Status</dt><dd>${esc(m.st)}</dd></dl>
+      ${clinical&&m.sum?`<p class="note" style="margin:7px 0 0;color:var(--ink-2)">${esc(m.sum)}</p>`:''}
+      <div style="margin-top:8px"><button class="rowbtn" style="font-size:11.5px">Open message</button>
+        <button class="rowbtn" style="font-size:11.5px;margin-left:12px">Open attachments</button></div>
+    </div></details>`;
+  const missing=docs.filter(d=>!d.pages).length;
+  return `<div class="dsec"><h4>Documents and correspondence
+      <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-weight:400">· the matter file</span></h4>
+    <div class="docgrp">
+      <h5>Documents (${docs.length}${missing?`, ${missing} outstanding`:''})</h5>
+      ${docs.map(row).join('')}
+      <h5>Correspondence (${mail.length})</h5>
+      ${mail.map(mrow).join('')}
+    </div>
+    <p class="note">Claim documents are source material CHART already holds and are available in both environments.${clinical?' The analytical reading of a document is patient safety work and is shown here only.':''} Prototype — document viewers are not wired.</p>
+  </div>`;
+}
+
 const drawer=$('#drawer'), scrim=$('#scrim');
 function openFinding(id){
   let f=FINDINGS.find(x=>x.id===id);
@@ -1651,7 +1935,7 @@ function openFinding(id){
     <div class="dsec"><h4>What the record shows <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-weight:400">· Objective 1A.7</span></h4>
       <div class="quote">${esc(f.text)}</div>
       <div class="cite"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2h5l3 3v9H4z" stroke="currentColor" stroke-width="1.3"/><path d="M9 2v3h3" stroke="currentColor" stroke-width="1.3"/></svg>
-        <span>${esc(f.src)}</span><button class="rowbtn" style="font-size:11.5px">Open source document</button></div>
+        <span>${esc(f.src)}</span><button class="rowbtn" style="font-size:11.5px" onclick="(function(){var d=document.querySelector('#drawer details.doc.cited')||document.querySelector('#drawer details.doc');if(d){d.open=true;d.scrollIntoView({block:'center',behavior:'smooth'});}})()">Open source document</button></div>
       <dl class="kv" style="margin-top:9px;grid-template-columns:104px 1fr;font-size:11.5px">
         <dt>Document ID</dt><dd class="mono">${esc(docIdOf(f.id))}</dd>
         <dt>Received</dt><dd>${esc(PROV_DATES[0])} from CHART claims system</dd>
@@ -1665,6 +1949,7 @@ function openFinding(id){
       <p style="margin:0;font-size:12.5px;color:var(--ink-2)">${esc(f.why)}</p></div>
     <div class="dsec"><h4>Standard of care</h4>
       <p style="margin:0;font-size:12.5px;color:var(--ink-2)">${esc(socLine)}</p></div>`}
+    ${docSection(f.id)}
     <div class="dsec"><h4>Coding</h4>
       <dl class="kv">
         <dt>Major allegation</dt><dd>${esc(f.cat)}</dd>
@@ -1858,7 +2143,7 @@ function applyEnv(){
   document.querySelectorAll('nav.tabs button').forEach(x=>x.setAttribute('aria-selected', x.dataset.tab===target));
   PANELS.forEach(p=>{ const sec=$('#'+p); if(sec) sec.hidden=(p!==target); });
   // KPI strip belongs to the environment
-  renderReports(); renderProt();
+  renderReports(); renderProt(); CORPUS=null;
   const K=ENV==='risk'?KPI_RISK:KPI_CLAIMS;
   $('#kpis').innerHTML=K.map((k,i)=>`<button class="kpi" data-kpi="${i}" type="button">
     <span class="lab">${esc(k.lab)}</span>
